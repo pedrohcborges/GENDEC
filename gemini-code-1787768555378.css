@@ -1,0 +1,8 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 10px; /* Reduzido para caber melhor na tela do celular */
+  touch-action: pan-x pan-y; /* Previne comportamentos estranhos de zoom ao desenhar */
+}
