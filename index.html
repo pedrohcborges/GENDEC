@@ -94,7 +94,6 @@
       min-width: 0;
     }
 
-    /* Trava de estouro de campos de data e hora */
     input[type="date"], input[type="time"] {
       -webkit-appearance: none;
       appearance: none;
@@ -192,22 +191,21 @@
       font-size: 0.8rem;
     }
 
-    /* Esconde a área de impressão da visualização normal */
     #printable-area {
       display: none;
     }
 
-    /* Ajustes para Impressão e PDF */
+    /* Impressão sem cabeçalho/rodapé de URL */
     @media print {
       @page {
         size: A4 portrait;
-        margin: 10mm;
+        margin: 0; /* Remove URL, datas e número de página */
       }
 
       body {
         background-color: #ffffff !important;
         color: #000000 !important;
-        padding: 0 !important;
+        padding: 12mm !important; /* Margem interna da folha */
       }
 
       .no-print, .container {
@@ -354,7 +352,7 @@
   </form>
 </div>
 
-<!-- Área Gerada Exclusiva para Impressão/PDF -->
+<!-- Área exclusiva para Impressão -->
 <div id="printable-area"></div>
 
 <script>
