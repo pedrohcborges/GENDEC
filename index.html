@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ICAO Annex 9 - General Declaration Generator</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --danger: #ef4444;
+      --input-bg: #0f172a;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border);
+    }
+
+    h1, h2 { color: var(--primary); text-transform: uppercase; }
+    h1 { margin-top: 0; font-size: 1.4rem; text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 12px; letter-spacing: 1px; }
+    h2 { font-size: 1rem; margin-top: 25px; border-bottom: 1px solid var(--border); padding-bottom: 6px; letter-spacing: 0.5px; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    input, select {
+      padding: 10px 12px;
+      background-color: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: var(--text);
+      text-transform: uppercase;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    .dynamic-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+    }
+
+    .dynamic-table th, .dynamic-table td {
+      border: 1px solid var(--border);
+      padding: 8px;
+      text-align: left;
+    }
+
+    .dynamic-table th {
+      background-color: #0f172a;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .btn {
+      background-color: var(--primary);
+      color: #0f172a;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      text-transform: uppercase;
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover { background-color: var(--primary-hover); color: white; }
+    .btn-secondary { background-color: #334155; color: var(--text); margin-top: 5px; }
+    .btn-secondary:hover { background-color: #475569; }
+    .btn-danger { background-color: var(--danger); color: white; padding: 6px 10px; font-size: 0.8rem; }
+    .btn-submit { width: 100%; padding: 15px; font-size: 1rem; margin-top: 25px; }
+
+    /* Printable Area Formatting - Mantido no padrão limpo de impressão */
+    @media print {
+      body * { visibility: hidden; }
+      #printable-area, #printable-area * { visibility: visible; }
+      #printable-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white;
+        color: black;
+        font-family: Arial, sans-serif;
+        font-size: 9pt;
+        text-transform: uppercase;
+      }
+
+      .gen-dec-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      .gen-dec-table td, .gen-dec-table th {
+        border: 1px solid #000;
+        padding: 5px;
+        vertical-align: top;
+      }
+
+      .text-center { text-align: center; }
+      .bold { font-weight: bold; }
+      .no-print { display: none !important; }
+    }
+
+    #printable-area { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="container no-print">
+  <h1>GENERAL DECLARATION (ICAO ANNEX 9 APPENDIX 1)</h1>
+  <form id="genDecForm">
+    
+    <h2>1. GENERAL INFORMATION</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>OPERATOR</label>
+        <input type="text" id="operator" required>
+      </div>
+      <div class="form-group">
+        <label>MARKS OF NATIONALITY & REG.</label>
+        <input type="text" id="registration" placeholder="E.G. PT-XXX" required>
+      </div>
+      <div class="form-group">
+        <label>FLIGHT TYPE</label>
+        <select id="flightType">
+          <option value="PRIVATE">PRIVATE</option>
+          <option value="SCHEDULED">SCHEDULED</option>
+          <option value="CHARTER">CHARTER</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>DATE</label>
+        <input type="date" id="date" required>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>DEPARTURE FROM (PLACE)</label>
+        <input type="text" id="depPlace" required>
+      </div>
+      <div class="form-group">
+        <label>DEPARTURE TIME (EXPECTED)</label>
+        <input type="time" id="depTime" required>
+      </div>
+      <div class="form-group">
+        <label>ARRIVAL AT (PLACE)</label>
+        <input type="text" id="arrPlace" required>
+      </div>
+      <div class="form-group">
+        <label>ARRIVAL TIME (EXPECTED)</label>
+        <input type="time" id="arrTime" required>
+      </div>
+    </div>
+
+    <h2>2. CREW MANIFEST</h2>
+    <table class="dynamic-table" id="crewTable">
+      <thead>
+        <tr>
+          <th>NAME</th>
+          <th>FUNC.</th>
+          <th>BIRTH DATE</th>
+          <th>BIRTH PLACE</th>
+          <th>PASSPORT COUNTRY & NO.</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button type="button" class="btn btn-secondary" onclick="addCrewRow()">+ ADD CREW MEMBER</button>
+
+    <h2>3. PASSENGER MANIFEST</h2>
+    <table class="dynamic-table" id="paxTable">
+      <thead>
+        <tr>
+          <th>NAME</th>
+          <th>BIRTH DATE</th>
+          <th>BIRTH PLACE</th>
+          <th>PASSPORT COUNTRY & NO.</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button type="button" class="btn btn-secondary" onclick="addPaxRow()">+ ADD PASSENGER</button>
+
+    <h2>4. HEALTH & AUTHORIZATION</h2>
+    <div class="form-group">
+      <label>AUTHORIZED AGENT OR PILOT-IN-COMMAND (NAME)</label>
+      <input type="text" id="picName" required>
+    </div>
+
+    <button type="button" class="btn btn-submit" onclick="generateAndPrint()">GERAR / IMPRIMIR DECLARAÇÃO</button>
+  </form>
+</div>
+
+<!-- Render Area for Print/PDF -->
+<div id="printable-area"></div>
+
+<script>
+  window.onload = () => {
+    addCrewRow('PILOT');
+    addCrewRow('PILOT');
+    addPaxRow();
+  };
+
+  function toUpper(str) {
+    return (str || '').toUpperCase();
+  }
+
+  function addCrewRow(defaultFunc = 'PILOT') {
+    const tbody = document.querySelector('#crewTable tbody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="text" class="c-name" style="width:90%"></td>
+      <td><input type="text" class="c-func" value="${defaultFunc}" style="width:90%"></td>
+      <td><input type="date" class="c-dob"></td>
+      <td><input type="text" class="c-pob" style="width:90%"></td>
+      <td><input type="text" class="c-pass" style="width:90%"></td>
+      <td><button type="button" class="btn btn-danger" onclick="this.closest('tr').remove()">X</button></td>
+    `;
+    tbody.appendChild(row);
+  }
+
+  function addPaxRow() {
+    const tbody = document.querySelector('#paxTable tbody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="text" class="p-name" style="width:90%"></td>
+      <td><input type="date" class="p-dob"></td>
+      <td><input type="text" class="p-pob" style="width:90%"></td>
+      <td><input type="text" class="p-pass" style="width:90%"></td>
+      <td><button type="button" class="btn btn-danger" onclick="this.closest('tr').remove()">X</button></td>
+    `;
+    tbody.appendChild(row);
+  }
+
+  function formatDate(d) {
+    if (!d) return '';
+    const parts = d.split('-');
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+
+  function generateAndPrint() {
+    const container = document.getElementById('printable-area');
+    
+    // Extract Crew Data
+    let crewRows = '';
+    document.querySelectorAll('#crewTable tbody tr').forEach(tr => {
+      const name = toUpper(tr.querySelector('.c-name').value);
+      const func = toUpper(tr.querySelector('.c-func').value);
+      const dob = formatDate(tr.querySelector('.c-dob').value);
+      const pob = toUpper(tr.querySelector('.c-pob').value);
+      const pass = toUpper(tr.querySelector('.c-pass').value);
+      if (name) {
+        crewRows += `
+          <tr>
+            <td colspan="2">${name}</td>
+            <td colspan="2">${func}</td>
+            <td>${dob}</td>
+            <td>${pob}</td>
+            <td colspan="2">${pass}</td>
+          </tr>`;
+      }
+    });
+
+    // Extract Pax Data
+    let paxRows = '';
+    document.querySelectorAll('#paxTable tbody tr').forEach(tr => {
+      const name = toUpper(tr.querySelector('.p-name').value);
+      const dob = formatDate(tr.querySelector('.p-dob').value);
+      const pob = toUpper(tr.querySelector('.p-pob').value);
+      const pass = toUpper(tr.querySelector('.p-pass').value);
+      if (name) {
+        paxRows += `
+          <tr>
+            <td colspan="3">${name}</td>
+            <td colspan="2">${dob}</td>
+            <td>${pob}</td>
+            <td colspan="2">${pass}</td>
+          </tr>`;
+      }
+    });
+
+    // Generate Official Layout
+    container.innerHTML = `
+      <div class="text-center bold" style="font-size: 12pt;">GENERAL DECLARATION</div>
+      <div class="text-center" style="font-size: 8pt; margin-bottom: 10px;">(OUTWARD/INWARD)<br>ICAO ANNEX 9 APPENDIX 1<br>AGRICULTURE, CUSTOMS, IMMIGRATION, AND PUBLIC HEALTH</div>
+      
+      <table class="gen-dec-table">
+        <tr>
+          <td colspan="4"><strong>OPERATOR:</strong> ${toUpper(document.getElementById('operator').value)}</td>
+          <td colspan="4"><strong>DATE:</strong> ${formatDate(document.getElementById('date').value)}</td>
+        </tr>
+        <tr>
+          <td colspan="4"><strong>MARKS OF NATIONALITY AND REGISTRATION:</strong> ${toUpper(document.getElementById('registration').value)}</td>
+          <td colspan="4"><strong>FLIGHT:</strong> ${toUpper(document.getElementById('flightType').value)}</td>
+        </tr>
+        <tr>
+          <td colspan="4"><strong>DEPARTURE FROM (PLACE):</strong> ${toUpper(document.getElementById('depPlace').value)}</td>
+          <td colspan="4"><strong>ARRIVAL AT (PLACE):</strong> ${toUpper(document.getElementById('arrPlace').value)}</td>
+        </tr>
+        <tr>
+          <td colspan="4"><strong>DEPARTURE TIME (EXPECTED):</strong> ${document.getElementById('depTime').value}</td>
+          <td colspan="4"><strong>ARRIVAL TIME (EXPECTED):</strong> ${document.getElementById('arrTime').value}</td>
+        </tr>
+        
+        <tr><th colspan="8" class="text-center" style="background:#eee;">CREW MANIFEST</th></tr>
+        <tr class="bold" style="font-size: 8pt;">
+          <td colspan="2">NAME</td>
+          <td colspan="2">FUNC.</td>
+          <td>BIRTH DATE</td>
+          <td>BIRTH PLACE</td>
+          <td colspan="2">PASSPORT COUNTRY & NUMBER</td>
+        </tr>
+        ${crewRows || '<tr><td colspan="8">NONE</td></tr>'}
+
+        <tr><th colspan="8" class="text-center" style="background:#eee;">PASSENGER MANIFEST</th></tr>
+        <tr class="bold" style="font-size: 8pt;">
+          <td colspan="3">NAME</td>
+          <td colspan="2">BIRTH DATE</td>
+          <td>BIRTH PLACE</td>
+          <td colspan="2">PASSPORT COUNTRY & NUMBER</td>
+        </tr>
+        ${paxRows || '<tr><td colspan="8">NONE</td></tr>'}
+
+        <tr>
+          <td colspan="5">
+            <strong>DECLARATION OF HEALTH</strong><br>
+            PERSONS ON BOARD KNOWN TO BE SUFFERING FROM ILLNESS OTHER THAN AIRSICKNESS OR THE EFFECTS OF ACCIDENTS, AS WELL AS THOSE CASES OF ILLNESS DISEMBARKED DURING THE FLIGHT: <strong>NONE</strong><br><br>
+            ANY OTHER CONDITION ON BOARD WHICH MAY LEAD TO THE SPREAD OF DISEASE: <strong>NONE</strong><br><br>
+            DETAILS OF EACH DISINSECTING OR SANITARY TREATMENT (PLACE, DATE, TIME, METHOD) DURING THE FLIGHT. IF NO DISINSECTING HAS BEEN CARRIED OUT DURING THE FLIGHT GIVE DETAILS OF MOST RECENT DISINSECTING: <strong>NONE</strong><br><br>
+            SIGNED, IF REQUIRED (CREW MEMBER CONCERNED): <strong>NONE</strong>
+          </td>
+          <td colspan="3">
+            <strong>FOR OFFICIAL USE ONLY</strong>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="8">
+            I DECLARE THAT ALL STATEMENTS AND PARTICULARS CONTAINED IN THIS GENERAL DECLARATION, AND IN SUPPLEMENTARY FORMS REQUIRED TO BE PRESENTED WITH THIS GENERAL DECLARATION, ARE COMPLETE, EXACT AND TRUE TO THE BEST OF MY KNOWLEDGE AND THAT ALL THROUGH PASSENGERS WILL CONTINUE/HAVE CONTINUED ON THE FLIGHT.<br><br>
+            <strong>NAME AND SIGNATURE (AUTHORIZED AGENT OR PILOT-IN-COMMAND):</strong><br>
+            ${toUpper(document.getElementById('picName').value)}
+            <br><br><br>
+            ________________________________________________________
+          </td>
+        </tr>
+      </table>
+    `;
+
+    document.getElementById('printable-area').style.display = 'block';
+    window.print();
+    document.getElementById('printable-area').style.display = 'none';
+  }
+</script>
+</body>
+</html>
