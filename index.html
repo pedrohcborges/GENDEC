@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ICAO Annex 9 - General Declaration Generator</title>
   <style>
     :root {
@@ -18,33 +18,38 @@
       --input-bg: #0f172a;
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 20px;
+      padding: 10px;
+      touch-action: manipulation;
     }
 
     .container {
       max-width: 900px;
       margin: 0 auto;
       background: var(--card-bg);
-      padding: 30px;
+      padding: 15px;
       border-radius: 12px;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
       border: 1px solid var(--border);
     }
 
     h1, h2 { color: var(--primary); text-transform: uppercase; }
-    h1 { margin-top: 0; font-size: 1.4rem; text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 12px; letter-spacing: 1px; }
-    h2 { font-size: 1rem; margin-top: 25px; border-bottom: 1px solid var(--border); padding-bottom: 6px; letter-spacing: 0.5px; }
+    h1 { margin-top: 0; font-size: 1.2rem; text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; letter-spacing: 1px; }
+    h2 { font-size: 0.9rem; margin-top: 20px; border-bottom: 1px solid var(--border); padding-bottom: 6px; letter-spacing: 0.5px; }
 
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 15px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-bottom: 10px;
     }
 
     .form-group {
@@ -53,9 +58,9 @@
     }
 
     label {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       color: var(--text-muted);
       text-transform: uppercase;
     }
@@ -65,31 +70,38 @@
       background-color: var(--input-bg);
       border: 1px solid var(--border);
       border-radius: 6px;
-      font-size: 0.9rem;
+      font-size: 16px; /* Evita auto-zoom do iOS em inputs */
       color: var(--text);
       text-transform: uppercase;
       outline: none;
+      width: 100%;
     }
 
     input:focus, select:focus {
       border-color: var(--primary);
     }
 
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      margin-bottom: 10px;
+    }
+
     .dynamic-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 12px;
+      min-width: 600px;
     }
 
     .dynamic-table th, .dynamic-table td {
       border: 1px solid var(--border);
-      padding: 8px;
+      padding: 6px;
       text-align: left;
     }
 
     .dynamic-table th {
       background-color: #0f172a;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--text-muted);
       text-transform: uppercase;
     }
@@ -98,12 +110,13 @@
       background-color: var(--primary);
       color: #0f172a;
       border: none;
-      padding: 10px 20px;
+      padding: 12px 16px;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
       text-transform: uppercase;
       transition: background-color 0.2s;
+      font-size: 0.85rem;
     }
 
     .btn:hover { background-color: var(--primary-hover); color: white; }
@@ -112,20 +125,24 @@
     .btn-save { background-color: var(--success); color: #0f172a; margin-top: 15px; width: 100%; }
     .btn-save:hover { background-color: #16a34a; color: white; }
     .btn-danger { background-color: var(--danger); color: white; padding: 6px 10px; font-size: 0.8rem; }
-    .btn-clear { background-color: #475569; color: white; padding: 6px 12px; font-size: 0.75rem; margin-top: 8px; align-self: flex-start; }
+    .btn-clear { background-color: #475569; color: white; padding: 8px 12px; font-size: 0.75rem; margin-top: 8px; align-self: flex-start; }
     .btn-submit { width: 100%; padding: 15px; font-size: 1rem; margin-top: 15px; }
 
     .canvas-container {
       background: #ffffff;
       border: 2px dashed var(--border);
       border-radius: 6px;
-      display: inline-block;
+      display: block;
+      width: 100%;
+      max-width: 400px;
       touch-action: none;
       margin-top: 5px;
     }
 
     canvas {
       display: block;
+      width: 100%;
+      height: 120px;
       cursor: crosshair;
     }
 
@@ -139,9 +156,10 @@
       text-align: center;
       margin-top: 10px;
       text-transform: uppercase;
+      font-size: 0.85rem;
     }
 
-    /* Printable Area Formatting */
+    /* Formatação para impressão/PDF */
     @media print {
       body * { visibility: hidden; }
       #printable-area, #printable-area * { visibility: visible; }
@@ -234,34 +252,38 @@
     </div>
 
     <h2>2. CREW MANIFEST</h2>
-    <table class="dynamic-table" id="crewTable">
-      <thead>
-        <tr>
-          <th>NAME</th>
-          <th>FUNC.</th>
-          <th>BIRTH DATE</th>
-          <th>BIRTH PLACE</th>
-          <th>PASSPORT COUNTRY & NO.</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div class="table-wrapper">
+      <table class="dynamic-table" id="crewTable">
+        <thead>
+          <tr>
+            <th>NAME</th>
+            <th>FUNC.</th>
+            <th>BIRTH DATE</th>
+            <th>BIRTH PLACE</th>
+            <th>PASSPORT COUNTRY & NO.</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
     <button type="button" class="btn btn-secondary" onclick="addCrewRow()">+ ADD CREW MEMBER</button>
 
     <h2>3. PASSENGER MANIFEST</h2>
-    <table class="dynamic-table" id="paxTable">
-      <thead>
-        <tr>
-          <th>NAME</th>
-          <th>BIRTH DATE</th>
-          <th>BIRTH PLACE</th>
-          <th>PASSPORT COUNTRY & NO.</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div class="table-wrapper">
+      <table class="dynamic-table" id="paxTable">
+        <thead>
+          <tr>
+            <th>NAME</th>
+            <th>BIRTH DATE</th>
+            <th>BIRTH PLACE</th>
+            <th>PASSPORT COUNTRY & NO.</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
     <button type="button" class="btn btn-secondary" onclick="addPaxRow()">+ ADD PASSENGER</button>
 
     <h2>4. HEALTH & AUTHORIZATION</h2>
@@ -309,7 +331,7 @@
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mouseleave', stopDrawing);
 
-    // Eventos de Touch para Celular / iPad
+    // Eventos de Touch para Celular / Tablet
     canvas.addEventListener('touchstart', (e) => {
       e.preventDefault();
       const touch = e.touches[0];
@@ -339,9 +361,11 @@
 
   function getPos(e) {
     const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
     return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
     };
   }
 
@@ -385,11 +409,11 @@
     const tbody = document.querySelector('#crewTable tbody');
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td><input type="text" class="c-name" value="${name}" style="width:90%"></td>
-      <td><input type="text" class="c-func" value="${func}" style="width:90%"></td>
+      <td><input type="text" class="c-name" value="${name}"></td>
+      <td><input type="text" class="c-func" value="${func}"></td>
       <td><input type="date" class="c-dob" value="${dob}"></td>
-      <td><input type="text" class="c-pob" value="${pob}" style="width:90%"></td>
-      <td><input type="text" class="c-pass" value="${pass}" style="width:90%"></td>
+      <td><input type="text" class="c-pob" value="${pob}"></td>
+      <td><input type="text" class="c-pass" value="${pass}"></td>
       <td><button type="button" class="btn btn-danger" onclick="this.closest('tr').remove()">X</button></td>
     `;
     tbody.appendChild(row);
@@ -399,10 +423,10 @@
     const tbody = document.querySelector('#paxTable tbody');
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td><input type="text" class="p-name" style="width:90%"></td>
+      <td><input type="text" class="p-name"></td>
       <td><input type="date" class="p-dob"></td>
-      <td><input type="text" class="p-pob" style="width:90%"></td>
-      <td><input type="text" class="p-pass" style="width:90%"></td>
+      <td><input type="text" class="p-pob"></td>
+      <td><input type="text" class="p-pass"></td>
       <td><button type="button" class="btn btn-danger" onclick="this.closest('tr').remove()">X</button></td>
     `;
     tbody.appendChild(row);
@@ -481,7 +505,7 @@
   function generateAndPrint() {
     const container = document.getElementById('printable-area');
     
-    // Extract Crew Data
+    // Extrai dados da Tripulação
     let crewRows = '';
     document.querySelectorAll('#crewTable tbody tr').forEach(tr => {
       const name = toUpper(tr.querySelector('.c-name').value);
@@ -501,7 +525,7 @@
       }
     });
 
-    // Extract Pax Data
+    // Extrai dados dos Passageiros
     let paxRows = '';
     document.querySelectorAll('#paxTable tbody tr').forEach(tr => {
       const name = toUpper(tr.querySelector('.p-name').value);
@@ -523,7 +547,7 @@
       ? '<br><br>________________________________________________________'
       : `<img src="${canvas.toDataURL()}" class="signature-img" /><br>________________________________________________________`;
 
-    // Generate Official Layout
+    // Gera o Layout Oficial
     container.innerHTML = `
       <div class="text-center bold" style="font-size: 12pt;">GENERAL DECLARATION</div>
       <div class="text-center" style="font-size: 8pt; margin-bottom: 10px;">(OUTWARD/INWARD)<br>ICAO ANNEX 9 APPENDIX 1<br>AGRICULTURE, CUSTOMS, IMMIGRATION, AND PUBLIC HEALTH</div>
