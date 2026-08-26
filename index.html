@@ -4,10 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ICAO Annex 9 - General Declaration Generator</title>
-  
-  <!-- Biblioteca para gerar PDF nativo direto no celular sem rodapés do sistema -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
   <style>
     :root {
       --bg: #0f172a;
@@ -60,7 +56,9 @@
     }
 
     @media (min-width: 600px) {
-      .form-grid { grid-template-columns: repeat(4, 1fr); }
+      .form-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
 
     .form-group {
@@ -102,7 +100,9 @@
       min-height: 38px;
     }
 
-    input:focus, select:focus { border-color: var(--primary); }
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
 
     .table-wrapper {
       width: 100%;
@@ -191,47 +191,65 @@
       font-size: 0.8rem;
     }
 
-    /* Container oculto onde o PDF perfeito é renderizado */
-    #pdf-template {
+    #printable-area {
       display: none;
     }
 
-    /* Estilos exclusivos do PDF limpo */
-    .pdf-container {
-      background: #ffffff;
-      color: #000000;
-      font-family: Arial, sans-serif;
-      font-size: 8pt;
-      text-transform: uppercase;
-      padding: 15px;
-    }
+    /* Impressão direta da tela com remoção de margens / URLs */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
 
-    .gen-dec-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 8px;
-    }
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 12mm !important;
+      }
 
-    .gen-dec-table td, .gen-dec-table th {
-      border: 1px solid #000;
-      padding: 4px;
-      vertical-align: top;
-    }
+      .no-print, .container {
+        display: none !important;
+      }
 
-    .signature-img {
-      max-height: 45px;
-      max-width: 200px;
-      display: block;
-      margin-top: 4px;
-    }
+      #printable-area {
+        display: block !important;
+        visibility: visible !important;
+        width: 100% !important;
+        background: white !important;
+        color: black !important;
+        font-family: Arial, sans-serif !important;
+        font-size: 8pt !important;
+        text-transform: uppercase !important;
+      }
 
-    .text-center { text-align: center; }
-    .bold { font-weight: bold; }
+      .gen-dec-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin-top: 8px !important;
+      }
+
+      .gen-dec-table td, .gen-dec-table th {
+        border: 1px solid #000 !important;
+        padding: 4px !important;
+        vertical-align: top !important;
+      }
+
+      .signature-img {
+        max-height: 45px !important;
+        max-width: 200px !important;
+        display: block !important;
+        margin-top: 4px !important;
+      }
+
+      .text-center { text-align: center !important; }
+      .bold { font-weight: bold !important; }
+    }
   </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container no-print">
   <h1>GENERAL DECLARATION (ICAO ANNEX 9 APPENDIX 1)</h1>
   <form id="genDecForm">
     
@@ -330,12 +348,12 @@
     <button type="button" class="btn btn-save" onclick="saveDefaults()">💾 SALVAR OPERADOR, CREW E ASSINATURA</button>
     <div id="toast" class="toast">DADOS SALVOS COM SUCESSO!</div>
 
-    <button type="button" class="btn btn-submit" id="btnGenerate" onclick="generatePDF()">📥 GERAR E BAIXAR PDF</button>
+    <button type="button" class="btn btn-submit" onclick="generateAndPrint()">GERAR / IMPRIMIR DECLARAÇÃO</button>
   </form>
 </div>
 
-<!-- Template invisível para compilação do PDF -->
-<div id="pdf-template"></div>
+<!-- Área de Impressão -->
+<div id="printable-area"></div>
 
 <script>
   let canvas, ctx, isDrawing = false;
@@ -360,17 +378,21 @@
     canvas.addEventListener('touchstart', (e) => {
       e.preventDefault();
       const touch = e.touches[0];
-      canvas.dispatchEvent(new MouseEvent('mousedown', {
-        clientX: touch.clientX, clientY: touch.clientY
-      }));
+      const mouseEvent = new MouseEvent('mousedown', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+      canvas.dispatchEvent(mouseEvent);
     });
 
     canvas.addEventListener('touchmove', (e) => {
       e.preventDefault();
       const touch = e.touches[0];
-      canvas.dispatchEvent(new MouseEvent('mousemove', {
-        clientX: touch.clientX, clientY: touch.clientY
-      }));
+      const mouseEvent = new MouseEvent('mousemove', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+      canvas.dispatchEvent(mouseEvent);
     });
 
     canvas.addEventListener('touchend', (e) => {
@@ -516,11 +538,9 @@
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
   }
 
-  function generatePDF() {
-    const btn = document.getElementById('btnGenerate');
-    btn.innerText = "GERANDO PDF...";
-    btn.disabled = true;
-
+  function generateAndPrint() {
+    const container = document.getElementById('printable-area');
+    
     let crewRows = '';
     document.querySelectorAll('#crewTable tbody tr').forEach(tr => {
       const name = toUpper(tr.querySelector('.c-name').value);
@@ -561,88 +581,74 @@
       ? '<br><br>________________________________________________________'
       : `<img src="${canvas.toDataURL()}" class="signature-img" /><br>________________________________________________________`;
 
-    const element = document.getElementById('pdf-template');
-    element.style.display = 'block';
-    element.innerHTML = `
-      <div class="pdf-container">
-        <div class="text-center bold" style="font-size: 11pt;">GENERAL DECLARATION</div>
-        <div class="text-center" style="font-size: 8pt; margin-bottom: 8px;">(OUTWARD/INWARD)<br>ICAO ANNEX 9 APPENDIX 1<br>AGRICULTURE, CUSTOMS, IMMIGRATION, AND PUBLIC HEALTH</div>
+    container.innerHTML = `
+      <div class="text-center bold" style="font-size: 11pt;">GENERAL DECLARATION</div>
+      <div class="text-center" style="font-size: 8pt; margin-bottom: 8px;">(OUTWARD/INWARD)<br>ICAO ANNEX 9 APPENDIX 1<br>AGRICULTURE, CUSTOMS, IMMIGRATION, AND PUBLIC HEALTH</div>
+      
+      <table class="gen-dec-table">
+        <tr>
+          <td colspan="4"><strong>OPERATOR:</strong> ${toUpper(document.getElementById('operator').value)}</td>
+          <td colspan="4"><strong>DATE:</strong> ${formatDate(document.getElementById('date').value)}</td>
+        </tr>
+        <tr>
+          <td colspan="4"><strong>MARKS OF NATIONALITY AND REGISTRATION:</strong> ${toUpper(document.getElementById('registration').value)}</td>
+          <td colspan="4"><strong>FLIGHT:</strong> ${toUpper(document.getElementById('flightType').value)}</td>
+        </tr>
+        <tr>
+          <td colspan="4"><strong>DEPARTURE FROM (PLACE):</strong> ${toUpper(document.getElementById('depPlace').value)}</td>
+          <td colspan="4"><strong>ARRIVAL AT (PLACE):</strong> ${toUpper(document.getElementById('arrPlace').value)}</td>
+        </tr>
+        <tr>
+          <td colspan="4"><strong>DEPARTURE TIME (EXPECTED):</strong> ${document.getElementById('depTime').value}</td>
+          <td colspan="4"><strong>ARRIVAL TIME (EXPECTED):</strong> ${document.getElementById('arrTime').value}</td>
+        </tr>
         
-        <table class="gen-dec-table">
-          <tr>
-            <td colspan="4"><strong>OPERATOR:</strong> ${toUpper(document.getElementById('operator').value)}</td>
-            <td colspan="4"><strong>DATE:</strong> ${formatDate(document.getElementById('date').value)}</td>
-          </tr>
-          <tr>
-            <td colspan="4"><strong>MARKS OF NATIONALITY AND REGISTRATION:</strong> ${toUpper(document.getElementById('registration').value)}</td>
-            <td colspan="4"><strong>FLIGHT:</strong> ${toUpper(document.getElementById('flightType').value)}</td>
-          </tr>
-          <tr>
-            <td colspan="4"><strong>DEPARTURE FROM (PLACE):</strong> ${toUpper(document.getElementById('depPlace').value)}</td>
-            <td colspan="4"><strong>ARRIVAL AT (PLACE):</strong> ${toUpper(document.getElementById('arrPlace').value)}</td>
-          </tr>
-          <tr>
-            <td colspan="4"><strong>DEPARTURE TIME (EXPECTED):</strong> ${document.getElementById('depTime').value}</td>
-            <td colspan="4"><strong>ARRIVAL TIME (EXPECTED):</strong> ${document.getElementById('arrTime').value}</td>
-          </tr>
-          
-          <tr><th colspan="8" class="text-center" style="background:#eee;">CREW MANIFEST</th></tr>
-          <tr class="bold" style="font-size: 8pt;">
-            <td colspan="2">NAME</td>
-            <td colspan="2">FUNC.</td>
-            <td>BIRTH DATE</td>
-            <td>BIRTH PLACE</td>
-            <td colspan="2">PASSPORT COUNTRY & NUMBER</td>
-          </tr>
-          ${crewRows || '<tr><td colspan="8">NONE</td></tr>'}
+        <tr><th colspan="8" class="text-center" style="background:#eee;">CREW MANIFEST</th></tr>
+        <tr class="bold" style="font-size: 8pt;">
+          <td colspan="2">NAME</td>
+          <td colspan="2">FUNC.</td>
+          <td>BIRTH DATE</td>
+          <td>BIRTH PLACE</td>
+          <td colspan="2">PASSPORT COUNTRY & NUMBER</td>
+        </tr>
+        ${crewRows || '<tr><td colspan="8">NONE</td></tr>'}
 
-          <tr><th colspan="8" class="text-center" style="background:#eee;">PASSENGER MANIFEST</th></tr>
-          <tr class="bold" style="font-size: 8pt;">
-            <td colspan="3">NAME</td>
-            <td colspan="2">BIRTH DATE</td>
-            <td>BIRTH PLACE</td>
-            <td colspan="2">PASSPORT COUNTRY & NUMBER</td>
-          </tr>
-          ${paxRows || '<tr><td colspan="8">NONE</td></tr>'}
+        <tr><th colspan="8" class="text-center" style="background:#eee;">PASSENGER MANIFEST</th></tr>
+        <tr class="bold" style="font-size: 8pt;">
+          <td colspan="3">NAME</td>
+          <td colspan="2">BIRTH DATE</td>
+          <td>BIRTH PLACE</td>
+          <td colspan="2">PASSPORT COUNTRY & NUMBER</td>
+        </tr>
+        ${paxRows || '<tr><td colspan="8">NONE</td></tr>'}
 
-          <tr>
-            <td colspan="5">
-              <strong>DECLARATION OF HEALTH</strong><br>
-              PERSONS ON BOARD KNOWN TO BE SUFFERING FROM ILLNESS OTHER THAN AIRSICKNESS OR THE EFFECTS OF ACCIDENTS, AS WELL AS THOSE CASES OF ILLNESS DISEMBARKED DURING THE FLIGHT: <strong>NONE</strong><br><br>
-              ANY OTHER CONDITION ON BOARD WHICH MAY LEAD TO THE SPREAD OF DISEASE: <strong>NONE</strong><br><br>
-              DETAILS OF EACH DISINSECTING OR SANITARY TREATMENT (PLACE, DATE, TIME, METHOD) DURING THE FLIGHT. IF NO DISINSECTING HAS BEEN CARRIED OUT DURING THE FLIGHT GIVE DETAILS OF MOST RECENT DISINSECTING: <strong>NONE</strong><br><br>
-              SIGNED, IF REQUIRED (CREW MEMBER CONCERNED): <strong>NONE</strong>
-            </td>
-            <td colspan="3">
-              <strong>FOR OFFICIAL USE ONLY</strong>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="8">
-              I DECLARE THAT ALL STATEMENTS AND PARTICULARS CONTAINED IN THIS GENERAL DECLARATION, AND IN SUPPLEMENTARY FORMS REQUIRED TO BE PRESENTED WITH THIS GENERAL DECLARATION, ARE COMPLETE, EXACT AND TRUE TO THE BEST OF MY KNOWLEDGE AND THAT ALL THROUGH PASSENGERS WILL CONTINUE/HAVE CONTINUED ON THE FLIGHT.<br><br>
-              <strong>NAME AND SIGNATURE (AUTHORIZED AGENT OR PILOT-IN-COMMAND):</strong><br>
-              ${toUpper(document.getElementById('picName').value)}
-              <br>
-              ${signatureImgTag}
-            </td>
-          </tr>
-        </table>
-      </div>
+        <tr>
+          <td colspan="5">
+            <strong>DECLARATION OF HEALTH</strong><br>
+            PERSONS ON BOARD KNOWN TO BE SUFFERING FROM ILLNESS OTHER THAN AIRSICKNESS OR THE EFFECTS OF ACCIDENTS, AS WELL AS THOSE CASES OF ILLNESS DISEMBARKED DURING THE FLIGHT: <strong>NONE</strong><br><br>
+            ANY OTHER CONDITION ON BOARD WHICH MAY LEAD TO THE SPREAD OF DISEASE: <strong>NONE</strong><br><br>
+            DETAILS OF EACH DISINSECTING OR SANITARY TREATMENT (PLACE, DATE, TIME, METHOD) DURING THE FLIGHT. IF NO DISINSECTING HAS BEEN CARRIED OUT DURING THE FLIGHT GIVE DETAILS OF MOST RECENT DISINSECTING: <strong>NONE</strong><br><br>
+            SIGNED, IF REQUIRED (CREW MEMBER CONCERNED): <strong>NONE</strong>
+          </td>
+          <td colspan="3">
+            <strong>FOR OFFICIAL USE ONLY</strong>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="8">
+            I DECLARE THAT ALL STATEMENTS AND PARTICULARS CONTAINED IN THIS GENERAL DECLARATION, AND IN SUPPLEMENTARY FORMS REQUIRED TO BE PRESENTED WITH THIS GENERAL DECLARATION, ARE COMPLETE, EXACT AND TRUE TO THE BEST OF MY KNOWLEDGE AND THAT ALL THROUGH PASSENGERS WILL CONTINUE/HAVE CONTINUED ON THE FLIGHT.<br><br>
+            <strong>NAME AND SIGNATURE (AUTHORIZED AGENT OR PILOT-IN-COMMAND):</strong><br>
+            ${toUpper(document.getElementById('picName').value)}
+            <br>
+            ${signatureImgTag}
+          </td>
+        </tr>
+      </table>
     `;
 
-    const opt = {
-      margin:       5,
-      filename:     `GENDEC_${toUpper(document.getElementById('registration').value) || 'FLIGHT'}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    html2pdf().set(opt).from(element).save().then(() => {
-      element.style.display = 'none';
-      btn.innerText = "📥 GERAR E BAIXAR PDF";
-      btn.disabled = false;
-    });
+    setTimeout(() => {
+      window.print();
+    }, 100);
   }
 </script>
 </body>
