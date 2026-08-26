@@ -195,17 +195,17 @@
       display: none;
     }
 
-    /* Impressão direta da tela com remoção de margens / URLs */
+    /* Impressão Ultra-Compacta para caber 8 passageiros em 1 página */
     @media print {
       @page {
         size: A4 portrait;
-        margin: 0;
+        margin: 4mm 5mm; /* Margens mínimas na borda da folha */
       }
 
       body {
         background-color: #ffffff !important;
         color: #000000 !important;
-        padding: 12mm !important;
+        padding: 0 !important;
       }
 
       .no-print, .container {
@@ -219,27 +219,28 @@
         background: white !important;
         color: black !important;
         font-family: Arial, sans-serif !important;
-        font-size: 8pt !important;
+        font-size: 6.5pt !important; /* Fonte reduzida para caber tudo */
+        line-height: 1.1 !important;
         text-transform: uppercase !important;
       }
 
       .gen-dec-table {
         width: 100% !important;
         border-collapse: collapse !important;
-        margin-top: 8px !important;
+        margin-top: 4px !important;
       }
 
       .gen-dec-table td, .gen-dec-table th {
         border: 1px solid #000 !important;
-        padding: 4px !important;
+        padding: 2px 3px !important; /* Espaçamento interno ultra-compacto */
         vertical-align: top !important;
       }
 
       .signature-img {
-        max-height: 45px !important;
-        max-width: 200px !important;
+        max-height: 30px !important; /* Tamanho da imagem da assinatura otimizado */
+        max-width: 160px !important;
         display: block !important;
-        margin-top: 4px !important;
+        margin-top: 2px !important;
       }
 
       .text-center { text-align: center !important; }
@@ -352,7 +353,7 @@
   </form>
 </div>
 
-<!-- Área de Impressão -->
+<!-- Área de Impressão Otimizada para 1 Página -->
 <div id="printable-area"></div>
 
 <script>
@@ -578,12 +579,12 @@
     });
 
     const signatureImgTag = isCanvasBlank() 
-      ? '<br><br>________________________________________________________'
+      ? '<br>________________________________________________________'
       : `<img src="${canvas.toDataURL()}" class="signature-img" /><br>________________________________________________________`;
 
     container.innerHTML = `
-      <div class="text-center bold" style="font-size: 11pt;">GENERAL DECLARATION</div>
-      <div class="text-center" style="font-size: 8pt; margin-bottom: 8px;">(OUTWARD/INWARD)<br>ICAO ANNEX 9 APPENDIX 1<br>AGRICULTURE, CUSTOMS, IMMIGRATION, AND PUBLIC HEALTH</div>
+      <div class="text-center bold" style="font-size: 9.5pt;">GENERAL DECLARATION</div>
+      <div class="text-center" style="font-size: 6.5pt; margin-bottom: 4px;">(OUTWARD/INWARD)<br>ICAO ANNEX 9 APPENDIX 1<br>AGRICULTURE, CUSTOMS, IMMIGRATION, AND PUBLIC HEALTH</div>
       
       <table class="gen-dec-table">
         <tr>
@@ -603,8 +604,8 @@
           <td colspan="4"><strong>ARRIVAL TIME (EXPECTED):</strong> ${document.getElementById('arrTime').value}</td>
         </tr>
         
-        <tr><th colspan="8" class="text-center" style="background:#eee;">CREW MANIFEST</th></tr>
-        <tr class="bold" style="font-size: 8pt;">
+        <tr><th colspan="8" class="text-center" style="background:#eee; font-size: 6.5pt;">CREW MANIFEST</th></tr>
+        <tr class="bold" style="font-size: 6pt;">
           <td colspan="2">NAME</td>
           <td colspan="2">FUNC.</td>
           <td>BIRTH DATE</td>
@@ -613,8 +614,8 @@
         </tr>
         ${crewRows || '<tr><td colspan="8">NONE</td></tr>'}
 
-        <tr><th colspan="8" class="text-center" style="background:#eee;">PASSENGER MANIFEST</th></tr>
-        <tr class="bold" style="font-size: 8pt;">
+        <tr><th colspan="8" class="text-center" style="background:#eee; font-size: 6.5pt;">PASSENGER MANIFEST</th></tr>
+        <tr class="bold" style="font-size: 6pt;">
           <td colspan="3">NAME</td>
           <td colspan="2">BIRTH DATE</td>
           <td>BIRTH PLACE</td>
@@ -625,9 +626,9 @@
         <tr>
           <td colspan="5">
             <strong>DECLARATION OF HEALTH</strong><br>
-            PERSONS ON BOARD KNOWN TO BE SUFFERING FROM ILLNESS OTHER THAN AIRSICKNESS OR THE EFFECTS OF ACCIDENTS, AS WELL AS THOSE CASES OF ILLNESS DISEMBARKED DURING THE FLIGHT: <strong>NONE</strong><br><br>
-            ANY OTHER CONDITION ON BOARD WHICH MAY LEAD TO THE SPREAD OF DISEASE: <strong>NONE</strong><br><br>
-            DETAILS OF EACH DISINSECTING OR SANITARY TREATMENT (PLACE, DATE, TIME, METHOD) DURING THE FLIGHT. IF NO DISINSECTING HAS BEEN CARRIED OUT DURING THE FLIGHT GIVE DETAILS OF MOST RECENT DISINSECTING: <strong>NONE</strong><br><br>
+            PERSONS ON BOARD KNOWN TO BE SUFFERING FROM ILLNESS OTHER THAN AIRSICKNESS OR THE EFFECTS OF ACCIDENTS, AS WELL AS THOSE CASES OF ILLNESS DISEMBARKED DURING THE FLIGHT: <strong>NONE</strong><br>
+            ANY OTHER CONDITION ON BOARD WHICH MAY LEAD TO THE SPREAD OF DISEASE: <strong>NONE</strong><br>
+            DETAILS OF EACH DISINSECTING OR SANITARY TREATMENT (PLACE, DATE, TIME, METHOD) DURING THE FLIGHT. IF NO DISINSECTING HAS BEEN CARRIED OUT DURING THE FLIGHT GIVE DETAILS OF MOST RECENT DISINSECTING: <strong>NONE</strong><br>
             SIGNED, IF REQUIRED (CREW MEMBER CONCERNED): <strong>NONE</strong>
           </td>
           <td colspan="3">
@@ -636,10 +637,9 @@
         </tr>
         <tr>
           <td colspan="8">
-            I DECLARE THAT ALL STATEMENTS AND PARTICULARS CONTAINED IN THIS GENERAL DECLARATION, AND IN SUPPLEMENTARY FORMS REQUIRED TO BE PRESENTED WITH THIS GENERAL DECLARATION, ARE COMPLETE, EXACT AND TRUE TO THE BEST OF MY KNOWLEDGE AND THAT ALL THROUGH PASSENGERS WILL CONTINUE/HAVE CONTINUED ON THE FLIGHT.<br><br>
+            I DECLARE THAT ALL STATEMENTS AND PARTICULARS CONTAINED IN THIS GENERAL DECLARATION, AND IN SUPPLEMENTARY FORMS REQUIRED TO BE PRESENTED WITH THIS GENERAL DECLARATION, ARE COMPLETE, EXACT AND TRUE TO THE BEST OF MY KNOWLEDGE AND THAT ALL THROUGH PASSENGERS WILL CONTINUE/HAVE CONTINUED ON THE FLIGHT.<br>
             <strong>NAME AND SIGNATURE (AUTHORIZED AGENT OR PILOT-IN-COMMAND):</strong><br>
             ${toUpper(document.getElementById('picName').value)}
-            <br>
             ${signatureImgTag}
           </td>
         </tr>
