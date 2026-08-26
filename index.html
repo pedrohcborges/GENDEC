@@ -20,13 +20,14 @@
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      margin: 0;
       padding: 10px;
       touch-action: manipulation;
     }
@@ -39,42 +40,65 @@
       border-radius: 12px;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
       border: 1px solid var(--border);
+      width: 100%;
     }
 
     h1, h2 { color: var(--primary); text-transform: uppercase; }
-    h1 { margin-top: 0; font-size: 1.2rem; text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; letter-spacing: 1px; }
-    h2 { font-size: 0.9rem; margin-top: 20px; border-bottom: 1px solid var(--border); padding-bottom: 6px; letter-spacing: 0.5px; }
+    h1 { font-size: 1.1rem; text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; letter-spacing: 0.5px; }
+    h2 { font-size: 0.85rem; margin-top: 20px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
 
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
+      margin-top: 10px;
       margin-bottom: 10px;
+    }
+
+    @media (min-width: 600px) {
+      .form-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
+      width: 100%;
+      min-width: 0;
     }
 
     label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 600;
       margin-bottom: 4px;
       color: var(--text-muted);
       text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     input, select {
-      padding: 10px 12px;
+      padding: 8px 10px;
       background-color: var(--input-bg);
       border: 1px solid var(--border);
       border-radius: 6px;
-      font-size: 16px; /* Evita auto-zoom do iOS em inputs */
+      font-size: 14px;
       color: var(--text);
       text-transform: uppercase;
       outline: none;
       width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+    }
+
+    /* Trava de estouro de campos de data e hora */
+    input[type="date"], input[type="time"] {
+      -webkit-appearance: none;
+      appearance: none;
+      min-height: 38px;
     }
 
     input:focus, select:focus {
@@ -84,13 +108,17 @@
     .table-wrapper {
       width: 100%;
       overflow-x: auto;
+      margin-top: 10px;
       margin-bottom: 10px;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid var(--border);
+      border-radius: 6px;
     }
 
     .dynamic-table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 600px;
+      min-width: 500px;
     }
 
     .dynamic-table th, .dynamic-table td {
@@ -101,22 +129,27 @@
 
     .dynamic-table th {
       background-color: #0f172a;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       color: var(--text-muted);
       text-transform: uppercase;
+    }
+
+    .dynamic-table input {
+      padding: 6px 8px;
+      font-size: 13px;
     }
 
     .btn {
       background-color: var(--primary);
       color: #0f172a;
       border: none;
-      padding: 12px 16px;
+      padding: 10px 14px;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
       text-transform: uppercase;
       transition: background-color 0.2s;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
 
     .btn:hover { background-color: var(--primary-hover); color: white; }
@@ -124,25 +157,25 @@
     .btn-secondary:hover { background-color: #475569; }
     .btn-save { background-color: var(--success); color: #0f172a; margin-top: 15px; width: 100%; }
     .btn-save:hover { background-color: #16a34a; color: white; }
-    .btn-danger { background-color: var(--danger); color: white; padding: 6px 10px; font-size: 0.8rem; }
-    .btn-clear { background-color: #475569; color: white; padding: 8px 12px; font-size: 0.75rem; margin-top: 8px; align-self: flex-start; }
-    .btn-submit { width: 100%; padding: 15px; font-size: 1rem; margin-top: 15px; }
+    .btn-danger { background-color: var(--danger); color: white; padding: 4px 8px; font-size: 0.75rem; }
+    .btn-clear { background-color: #475569; color: white; padding: 6px 10px; font-size: 0.7rem; margin-top: 6px; align-self: flex-start; }
+    .btn-submit { width: 100%; padding: 14px; font-size: 0.95rem; margin-top: 15px; }
 
     .canvas-container {
       background: #ffffff;
       border: 2px dashed var(--border);
       border-radius: 6px;
-      display: block;
       width: 100%;
-      max-width: 400px;
+      max-width: 350px;
       touch-action: none;
       margin-top: 5px;
+      overflow: hidden;
     }
 
     canvas {
       display: block;
       width: 100%;
-      height: 120px;
+      height: 100px;
       cursor: crosshair;
     }
 
@@ -151,55 +184,69 @@
       background-color: var(--success);
       color: #0f172a;
       font-weight: bold;
-      padding: 10px;
+      padding: 8px;
       border-radius: 6px;
       text-align: center;
       margin-top: 10px;
       text-transform: uppercase;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
 
-    /* Formatação para impressão/PDF */
+    /* Esconde a área de impressão da visualização normal */
+    #printable-area {
+      display: none;
+    }
+
+    /* Ajustes para Impressão e PDF */
     @media print {
-      body * { visibility: hidden; }
-      #printable-area, #printable-area * { visibility: visible; }
+      @page {
+        size: A4 portrait;
+        margin: 10mm;
+      }
+
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+      }
+
+      .no-print, .container {
+        display: none !important;
+      }
+
       #printable-area {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        background: white;
-        color: black;
-        font-family: Arial, sans-serif;
-        font-size: 9pt;
-        text-transform: uppercase;
+        display: block !important;
+        visibility: visible !important;
+        width: 100% !important;
+        background: white !important;
+        color: black !important;
+        font-family: Arial, sans-serif !important;
+        font-size: 8pt !important;
+        text-transform: uppercase !important;
       }
 
       .gen-dec-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin-top: 8px !important;
       }
 
       .gen-dec-table td, .gen-dec-table th {
-        border: 1px solid #000;
-        padding: 5px;
-        vertical-align: top;
+        border: 1px solid #000 !important;
+        padding: 4px !important;
+        vertical-align: top !important;
       }
 
       .signature-img {
-        max-height: 50px;
-        max-width: 250px;
-        display: block;
-        margin-top: 5px;
+        max-height: 45px !important;
+        max-width: 200px !important;
+        display: block !important;
+        margin-top: 4px !important;
       }
 
-      .text-center { text-align: center; }
-      .bold { font-weight: bold; }
-      .no-print { display: none !important; }
+      .text-center { text-align: center !important; }
+      .bold { font-weight: bold !important; }
     }
-
-    #printable-area { display: none; }
   </style>
 </head>
 <body>
@@ -215,8 +262,8 @@
         <input type="text" id="operator" required>
       </div>
       <div class="form-group">
-        <label>MARKS OF NATIONALITY & REG.</label>
-        <input type="text" id="registration" placeholder="E.G. PT-XXX" required>
+        <label>REGISTRATION</label>
+        <input type="text" id="registration" placeholder="PT-XXX" required>
       </div>
       <div class="form-group">
         <label>FLIGHT TYPE</label>
@@ -234,19 +281,19 @@
 
     <div class="form-grid">
       <div class="form-group">
-        <label>DEPARTURE FROM (PLACE)</label>
+        <label>DEPARTURE FROM</label>
         <input type="text" id="depPlace" required>
       </div>
       <div class="form-group">
-        <label>DEPARTURE TIME (EXPECTED)</label>
+        <label>DEP. TIME (EXP)</label>
         <input type="time" id="depTime" required>
       </div>
       <div class="form-group">
-        <label>ARRIVAL AT (PLACE)</label>
+        <label>ARRIVAL AT</label>
         <input type="text" id="arrPlace" required>
       </div>
       <div class="form-group">
-        <label>ARRIVAL TIME (EXPECTED)</label>
+        <label>ARR. TIME (EXP)</label>
         <input type="time" id="arrTime" required>
       </div>
     </div>
@@ -260,14 +307,14 @@
             <th>FUNC.</th>
             <th>BIRTH DATE</th>
             <th>BIRTH PLACE</th>
-            <th>PASSPORT COUNTRY & NO.</th>
+            <th>PASSPORT & NO.</th>
             <th></th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
     </div>
-    <button type="button" class="btn btn-secondary" onclick="addCrewRow()">+ ADD CREW MEMBER</button>
+    <button type="button" class="btn btn-secondary" onclick="addCrewRow()">+ ADD CREW</button>
 
     <h2>3. PASSENGER MANIFEST</h2>
     <div class="table-wrapper">
@@ -277,7 +324,7 @@
             <th>NAME</th>
             <th>BIRTH DATE</th>
             <th>BIRTH PLACE</th>
-            <th>PASSPORT COUNTRY & NO.</th>
+            <th>PASSPORT & NO.</th>
             <th></th>
           </tr>
         </thead>
@@ -288,26 +335,26 @@
 
     <h2>4. HEALTH & AUTHORIZATION</h2>
     <div class="form-group">
-      <label>AUTHORIZED AGENT OR PILOT-IN-COMMAND (NAME)</label>
+      <label>AUTHORIZED AGENT OR PILOT-IN-COMMAND</label>
       <input type="text" id="picName" required>
     </div>
 
     <div class="form-group" style="margin-top: 15px;">
-      <label>SIGNATURE (DESENHE SUA ASSINATURA ABAIXO)</label>
+      <label>SIGNATURE (DESENHE ABAIXO)</label>
       <div class="canvas-container">
-        <canvas id="sigCanvas" width="400" height="120"></canvas>
+        <canvas id="sigCanvas" width="350" height="100"></canvas>
       </div>
       <button type="button" class="btn btn-clear" onclick="clearCanvas()">LIMPAR ASSINATURA</button>
     </div>
 
-    <button type="button" class="btn btn-save" onclick="saveDefaults()">💾 SALVAR OPERADOR, CREW E ASSINATURA COMO PADRÃO</button>
-    <div id="toast" class="toast">DADOS E ASSINATURA SALVOS COM SUCESSO!</div>
+    <button type="button" class="btn btn-save" onclick="saveDefaults()">💾 SALVAR OPERADOR, CREW E ASSINATURA</button>
+    <div id="toast" class="toast">DADOS SALVOS COM SUCESSO!</div>
 
     <button type="button" class="btn btn-submit" onclick="generateAndPrint()">GERAR / IMPRIMIR DECLARAÇÃO</button>
   </form>
 </div>
 
-<!-- Render Area for Print/PDF -->
+<!-- Área Gerada Exclusiva para Impressão/PDF -->
 <div id="printable-area"></div>
 
 <script>
@@ -321,17 +368,17 @@
   function initCanvas() {
     canvas = document.getElementById('sigCanvas');
     ctx = canvas.getContext('2d');
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 2;
     ctx.lineCap = 'round';
     ctx.strokeStyle = '#000000';
 
-    // Eventos de Mouse
+    // Eventos Mouse
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mouseleave', stopDrawing);
 
-    // Eventos de Touch para Celular / Tablet
+    // Eventos Touch
     canvas.addEventListener('touchstart', (e) => {
       e.preventDefault();
       const touch = e.touches[0];
@@ -354,8 +401,7 @@
 
     canvas.addEventListener('touchend', (e) => {
       e.preventDefault();
-      const mouseEvent = new MouseEvent('mouseup', {});
-      canvas.dispatchEvent(mouseEvent);
+      canvas.dispatchEvent(new MouseEvent('mouseup', {}));
     });
   }
 
@@ -449,13 +495,7 @@
 
     const sigData = isCanvasBlank() ? '' : canvas.toDataURL();
 
-    const defaults = {
-      operator,
-      picName,
-      crewData,
-      sigData
-    };
-
+    const defaults = { operator, picName, crewData, sigData };
     localStorage.setItem('gendec_defaults', JSON.stringify(defaults));
 
     const toast = document.getElementById('toast');
@@ -505,7 +545,6 @@
   function generateAndPrint() {
     const container = document.getElementById('printable-area');
     
-    // Extrai dados da Tripulação
     let crewRows = '';
     document.querySelectorAll('#crewTable tbody tr').forEach(tr => {
       const name = toUpper(tr.querySelector('.c-name').value);
@@ -525,7 +564,6 @@
       }
     });
 
-    // Extrai dados dos Passageiros
     let paxRows = '';
     document.querySelectorAll('#paxTable tbody tr').forEach(tr => {
       const name = toUpper(tr.querySelector('.p-name').value);
@@ -547,10 +585,9 @@
       ? '<br><br>________________________________________________________'
       : `<img src="${canvas.toDataURL()}" class="signature-img" /><br>________________________________________________________`;
 
-    // Gera o Layout Oficial
     container.innerHTML = `
-      <div class="text-center bold" style="font-size: 12pt;">GENERAL DECLARATION</div>
-      <div class="text-center" style="font-size: 8pt; margin-bottom: 10px;">(OUTWARD/INWARD)<br>ICAO ANNEX 9 APPENDIX 1<br>AGRICULTURE, CUSTOMS, IMMIGRATION, AND PUBLIC HEALTH</div>
+      <div class="text-center bold" style="font-size: 11pt;">GENERAL DECLARATION</div>
+      <div class="text-center" style="font-size: 8pt; margin-bottom: 8px;">(OUTWARD/INWARD)<br>ICAO ANNEX 9 APPENDIX 1<br>AGRICULTURE, CUSTOMS, IMMIGRATION, AND PUBLIC HEALTH</div>
       
       <table class="gen-dec-table">
         <tr>
@@ -613,9 +650,9 @@
       </table>
     `;
 
-    document.getElementById('printable-area').style.display = 'block';
-    window.print();
-    document.getElementById('printable-area').style.display = 'none';
+    setTimeout(() => {
+      window.print();
+    }, 100);
   }
 </script>
 </body>
