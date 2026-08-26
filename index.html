@@ -109,10 +109,25 @@
     .btn:hover { background-color: var(--primary-hover); color: white; }
     .btn-secondary { background-color: #334155; color: var(--text); margin-top: 5px; }
     .btn-secondary:hover { background-color: #475569; }
-    .btn-save { background-color: var(--success); color: #0f172a; margin-top: 10px; }
+    .btn-save { background-color: var(--success); color: #0f172a; margin-top: 15px; width: 100%; }
     .btn-save:hover { background-color: #16a34a; color: white; }
     .btn-danger { background-color: var(--danger); color: white; padding: 6px 10px; font-size: 0.8rem; }
-    .btn-submit { width: 100%; padding: 15px; font-size: 1rem; margin-top: 25px; }
+    .btn-clear { background-color: #475569; color: white; padding: 6px 12px; font-size: 0.75rem; margin-top: 8px; align-self: flex-start; }
+    .btn-submit { width: 100%; padding: 15px; font-size: 1rem; margin-top: 15px; }
+
+    .canvas-container {
+      background: #ffffff;
+      border: 2px dashed var(--border);
+      border-radius: 6px;
+      display: inline-block;
+      touch-action: none;
+      margin-top: 5px;
+    }
+
+    canvas {
+      display: block;
+      cursor: crosshair;
+    }
 
     .toast {
       display: none;
@@ -152,6 +167,13 @@
         border: 1px solid #000;
         padding: 5px;
         vertical-align: top;
+      }
+
+      .signature-img {
+        max-height: 50px;
+        max-width: 250px;
+        display: block;
+        margin-top: 5px;
       }
 
       .text-center { text-align: center; }
@@ -248,8 +270,16 @@
       <input type="text" id="picName" required>
     </div>
 
-    <button type="button" class="btn btn-save" onclick="saveDefaults()">💾 SALVAR OPERADOR E CREW COMO PADRÃO</button>
-    <div id="toast" class="toast">DADOS DE OPERADOR E CREW SALVOS COM SUCESSO!</div>
+    <div class="form-group" style="margin-top: 15px;">
+      <label>SIGNATURE (DESENHE SUA ASSINATURA ABAIXO)</label>
+      <div class="canvas-container">
+        <canvas id="sigCanvas" width="400" height="120"></canvas>
+      </div>
+      <button type="button" class="btn btn-clear" onclick="clearCanvas()">LIMPAR ASSINATURA</button>
+    </div>
+
+    <button type="button" class="btn btn-save" onclick="saveDefaults()">💾 SALVAR OPERADOR, CREW E ASSINATURA COMO PADRÃO</button>
+    <div id="toast" class="toast">DADOS E ASSINATURA SALVOS COM SUCESSO!</div>
 
     <button type="button" class="btn btn-submit" onclick="generateAndPrint()">GERAR / IMPRIMIR DECLARAÇÃO</button>
   </form>
@@ -259,9 +289,93 @@
 <div id="printable-area"></div>
 
 <script>
+  let canvas, ctx, isDrawing = false;
+
   window.onload = () => {
+    initCanvas();
     loadDefaults();
   };
+
+  function initCanvas() {
+    canvas = document.getElementById('sigCanvas');
+    ctx = canvas.getContext('2d');
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#000000';
+
+    // Eventos de Mouse
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+
+    // Eventos de Touch para Celular / iPad
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const mouseEvent = new MouseEvent('mousedown', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+      canvas.dispatchEvent(mouseEvent);
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const mouseEvent = new MouseEvent('mousemove', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+      canvas.dispatchEvent(mouseEvent);
+    });
+
+    canvas.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      const mouseEvent = new MouseEvent('mouseup', {});
+      canvas.dispatchEvent(mouseEvent);
+    });
+  }
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+
+  function startDrawing(e) {
+    isDrawing = true;
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+  }
+
+  function draw(e) {
+    if (!isDrawing) return;
+    const pos = getPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+  }
+
+  function stopDrawing() {
+    if (isDrawing) {
+      ctx.closePath();
+      isDrawing = false;
+    }
+  }
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function isCanvasBlank() {
+    const pixelBuffer = new Uint32Array(
+      ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer
+    );
+    return !pixelBuffer.some(color => color !== 0);
+  }
 
   function toUpper(str) {
     return (str || '').toUpperCase();
@@ -294,7 +408,6 @@
     tbody.appendChild(row);
   }
 
-  // Save Operator and Crew Data in LocalStorage
   function saveDefaults() {
     const operator = document.getElementById('operator').value;
     const picName = document.getElementById('picName').value;
@@ -310,10 +423,13 @@
       });
     });
 
+    const sigData = isCanvasBlank() ? '' : canvas.toDataURL();
+
     const defaults = {
       operator,
       picName,
-      crewData
+      crewData,
+      sigData
     };
 
     localStorage.setItem('gendec_defaults', JSON.stringify(defaults));
@@ -323,7 +439,6 @@
     setTimeout(() => { toast.style.display = 'none'; }, 2500);
   }
 
-  // Load Saved Operator and Crew Data
   function loadDefaults() {
     const saved = localStorage.getItem('gendec_defaults');
     
@@ -340,12 +455,21 @@
         addCrewRow('', 'PILOT');
         addCrewRow('', 'PILOT');
       }
+
+      if (defaults.sigData) {
+        const img = new Image();
+        img.onload = () => {
+          clearCanvas();
+          ctx.drawImage(img, 0, 0);
+        };
+        img.src = defaults.sigData;
+      }
     } else {
       addCrewRow('', 'PILOT');
       addCrewRow('', 'PILOT');
     }
 
-    addPaxRow(); // Always load 1 empty pax row
+    addPaxRow();
   }
 
   function formatDate(d) {
@@ -394,6 +518,10 @@
           </tr>`;
       }
     });
+
+    const signatureImgTag = isCanvasBlank() 
+      ? '<br><br>________________________________________________________'
+      : `<img src="${canvas.toDataURL()}" class="signature-img" /><br>________________________________________________________`;
 
     // Generate Official Layout
     container.innerHTML = `
@@ -454,8 +582,8 @@
             I DECLARE THAT ALL STATEMENTS AND PARTICULARS CONTAINED IN THIS GENERAL DECLARATION, AND IN SUPPLEMENTARY FORMS REQUIRED TO BE PRESENTED WITH THIS GENERAL DECLARATION, ARE COMPLETE, EXACT AND TRUE TO THE BEST OF MY KNOWLEDGE AND THAT ALL THROUGH PASSENGERS WILL CONTINUE/HAVE CONTINUED ON THE FLIGHT.<br><br>
             <strong>NAME AND SIGNATURE (AUTHORIZED AGENT OR PILOT-IN-COMMAND):</strong><br>
             ${toUpper(document.getElementById('picName').value)}
-            <br><br><br>
-            ________________________________________________________
+            <br>
+            ${signatureImgTag}
           </td>
         </tr>
       </table>
