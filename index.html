@@ -13,6 +13,7 @@
       --text-muted: #94a3b8;
       --primary: #38bdf8;
       --primary-hover: #0284c7;
+      --success: #22c55e;
       --danger: #ef4444;
       --input-bg: #0f172a;
     }
@@ -108,10 +109,24 @@
     .btn:hover { background-color: var(--primary-hover); color: white; }
     .btn-secondary { background-color: #334155; color: var(--text); margin-top: 5px; }
     .btn-secondary:hover { background-color: #475569; }
+    .btn-save { background-color: var(--success); color: #0f172a; margin-top: 10px; }
+    .btn-save:hover { background-color: #16a34a; color: white; }
     .btn-danger { background-color: var(--danger); color: white; padding: 6px 10px; font-size: 0.8rem; }
     .btn-submit { width: 100%; padding: 15px; font-size: 1rem; margin-top: 25px; }
 
-    /* Printable Area Formatting - Mantido no padrão limpo de impressão */
+    .toast {
+      display: none;
+      background-color: var(--success);
+      color: #0f172a;
+      font-weight: bold;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+      margin-top: 10px;
+      text-transform: uppercase;
+    }
+
+    /* Printable Area Formatting */
     @media print {
       body * { visibility: hidden; }
       #printable-area, #printable-area * { visibility: visible; }
@@ -233,6 +248,9 @@
       <input type="text" id="picName" required>
     </div>
 
+    <button type="button" class="btn btn-save" onclick="saveDefaults()">💾 SALVAR OPERADOR E CREW COMO PADRÃO</button>
+    <div id="toast" class="toast">DADOS DE OPERADOR E CREW SALVOS COM SUCESSO!</div>
+
     <button type="button" class="btn btn-submit" onclick="generateAndPrint()">GERAR / IMPRIMIR DECLARAÇÃO</button>
   </form>
 </div>
@@ -242,24 +260,22 @@
 
 <script>
   window.onload = () => {
-    addCrewRow('PILOT');
-    addCrewRow('PILOT');
-    addPaxRow();
+    loadDefaults();
   };
 
   function toUpper(str) {
     return (str || '').toUpperCase();
   }
 
-  function addCrewRow(defaultFunc = 'PILOT') {
+  function addCrewRow(name = '', func = 'PILOT', dob = '', pob = '', pass = '') {
     const tbody = document.querySelector('#crewTable tbody');
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td><input type="text" class="c-name" style="width:90%"></td>
-      <td><input type="text" class="c-func" value="${defaultFunc}" style="width:90%"></td>
-      <td><input type="date" class="c-dob"></td>
-      <td><input type="text" class="c-pob" style="width:90%"></td>
-      <td><input type="text" class="c-pass" style="width:90%"></td>
+      <td><input type="text" class="c-name" value="${name}" style="width:90%"></td>
+      <td><input type="text" class="c-func" value="${func}" style="width:90%"></td>
+      <td><input type="date" class="c-dob" value="${dob}"></td>
+      <td><input type="text" class="c-pob" value="${pob}" style="width:90%"></td>
+      <td><input type="text" class="c-pass" value="${pass}" style="width:90%"></td>
       <td><button type="button" class="btn btn-danger" onclick="this.closest('tr').remove()">X</button></td>
     `;
     tbody.appendChild(row);
@@ -276,6 +292,60 @@
       <td><button type="button" class="btn btn-danger" onclick="this.closest('tr').remove()">X</button></td>
     `;
     tbody.appendChild(row);
+  }
+
+  // Save Operator and Crew Data in LocalStorage
+  function saveDefaults() {
+    const operator = document.getElementById('operator').value;
+    const picName = document.getElementById('picName').value;
+    
+    const crewData = [];
+    document.querySelectorAll('#crewTable tbody tr').forEach(tr => {
+      crewData.push({
+        name: tr.querySelector('.c-name').value,
+        func: tr.querySelector('.c-func').value,
+        dob: tr.querySelector('.c-dob').value,
+        pob: tr.querySelector('.c-pob').value,
+        pass: tr.querySelector('.c-pass').value
+      });
+    });
+
+    const defaults = {
+      operator,
+      picName,
+      crewData
+    };
+
+    localStorage.setItem('gendec_defaults', JSON.stringify(defaults));
+
+    const toast = document.getElementById('toast');
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 2500);
+  }
+
+  // Load Saved Operator and Crew Data
+  function loadDefaults() {
+    const saved = localStorage.getItem('gendec_defaults');
+    
+    if (saved) {
+      const defaults = JSON.parse(saved);
+      document.getElementById('operator').value = defaults.operator || '';
+      document.getElementById('picName').value = defaults.picName || '';
+      
+      const tbody = document.querySelector('#crewTable tbody');
+      tbody.innerHTML = '';
+      if (defaults.crewData && defaults.crewData.length > 0) {
+        defaults.crewData.forEach(c => addCrewRow(c.name, c.func, c.dob, c.pob, c.pass));
+      } else {
+        addCrewRow('', 'PILOT');
+        addCrewRow('', 'PILOT');
+      }
+    } else {
+      addCrewRow('', 'PILOT');
+      addCrewRow('', 'PILOT');
+    }
+
+    addPaxRow(); // Always load 1 empty pax row
   }
 
   function formatDate(d) {
