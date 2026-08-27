@@ -278,20 +278,20 @@
         background: white !important;
         color: black !important;
         font-family: Arial, sans-serif !important;
-        font-size: 8pt !important;
-        line-height: 1.15 !important;
+        font-size: 6.5pt !important;
+        line-height: 1.1 !important;
         text-transform: uppercase !important;
       }
 
       .gen-dec-table {
         width: 100% !important;
         border-collapse: collapse !important;
-        margin-top: 6px !important;
+        margin-top: 4px !important;
       }
 
       .gen-dec-table td, .gen-dec-table th {
         border: 1px solid #000 !important;
-        padding: 3px 5px !important;
+        padding: 2px 5px !important;
         vertical-align: top !important;
         page-break-inside: avoid !important;
       }
@@ -301,10 +301,10 @@
       }
 
       .signature-img {
-        max-height: 35px !important;
-        max-width: 180px !important;
+        max-height: 30px !important;
+        max-width: 160px !important;
         display: block !important;
-        margin-top: 3px !important;
+        margin-top: 2px !important;
       }
 
       .text-center { text-align: center !important; }
@@ -703,8 +703,8 @@
         paxRows += `
           <tr>
             <td colspan="3">${name}</td>
-            <td colspan="2">${dob}</td>
-            <td>${pob}</td>
+            <td>${dob}</td>
+            <td colspan="2">${pob}</td>
             <td colspan="2">${pass}</td>
           </tr>`;
       }
@@ -715,8 +715,8 @@
       : `<img src="${canvas.toDataURL()}" class="signature-img" /><br>________________________________________________________`;
 
     container.innerHTML = `
-      <div class="text-center bold" style="font-size: 11pt;">GENERAL DECLARATION</div>
-      <div class="text-center" style="font-size: 7pt; margin-bottom: 6px;">(OUTWARD/INWARD)<br>ICAO ANNEX 9 APPENDIX 1<br>AGRICULTURE, CUSTOMS, IMMIGRATION, AND PUBLIC HEALTH</div>
+      <div class="text-center bold" style="font-size: 9.5pt;">GENERAL DECLARATION</div>
+      <div class="text-center" style="font-size: 6.5pt; margin-bottom: 4px;">(OUTWARD/INWARD)<br>ICAO ANNEX 9 APPENDIX 1<br>AGRICULTURE, CUSTOMS, IMMIGRATION, AND PUBLIC HEALTH</div>
       
       <table class="gen-dec-table">
         <tr>
@@ -749,8 +749,8 @@
         <tr><th colspan="8" class="text-center" style="background:#eee; font-size: 6.5pt;">PASSENGER MANIFEST</th></tr>
         <tr class="bold" style="font-size: 6pt;">
           <td colspan="3">NAME</td>
-          <td colspan="2">BIRTH DATE</td>
-          <td>BIRTH PLACE</td>
+          <td>BIRTH DATE</td>
+          <td colspan="2">BIRTH PLACE</td>
           <td colspan="2">PASSPORT COUNTRY & NUMBER</td>
         </tr>
         ${paxRows || '<tr><td colspan="8">NONE</td></tr>'}
