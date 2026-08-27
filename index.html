@@ -254,7 +254,7 @@
       display: none;
     }
 
-    /* Impressão Reativa Ajustada */
+    /* Impressão Ultra-Compacta (A4 1 Folha para 8 passageiros) */
     @media print {
       @page {
         size: A4 portrait;
@@ -278,8 +278,8 @@
         background: white !important;
         color: black !important;
         font-family: Arial, sans-serif !important;
-        font-size: 8.5pt !important;
-        line-height: 1.15 !important;
+        font-size: 6.5pt !important;
+        line-height: 1.1 !important;
         text-transform: uppercase !important;
       }
 
@@ -292,7 +292,7 @@
 
       .gen-dec-table td, .gen-dec-table th {
         border: 1px solid #000 !important;
-        padding: 3px 5px !important;
+        padding: 2px 5px !important;
         vertical-align: top !important;
         page-break-inside: avoid !important;
         word-wrap: break-word !important;
@@ -304,18 +304,18 @@
       }
 
       .signature-img {
-        max-height: 35px !important;
-        max-width: 175px !important;
+        max-height: 30px !important;
+        max-width: 160px !important;
         display: block !important;
         margin-top: 2px !important;
       }
 
-      .gd-title { font-size: 11pt !important; }
-      .gd-subtitle { font-size: 7.5pt !important; margin-bottom: 4px !important; }
-      .gd-section-header { font-size: 7.5pt !important; }
+      .gd-title { font-size: 9.5pt !important; }
+      .gd-subtitle { font-size: 6.5pt !important; margin-bottom: 4px !important; }
+      .gd-section-header { font-size: 6.5pt !important; }
 
-      /* Dimensionamento ajustado para não diminuir demais o texto quando houver mais de 5 passageiros */
-      #printable-area.print-scale-xl { font-size: 11pt !important; line-height: 1.35 !important; }
+      /* Poucos nomes preenchidos: letra maior para preencher a folha */
+      #printable-area.print-scale-xl { font-size: 11pt !important; line-height: 1.4 !important; }
       #printable-area.print-scale-xl .gen-dec-table td,
       #printable-area.print-scale-xl .gen-dec-table th { padding: 5px 7px !important; }
       #printable-area.print-scale-xl .gd-title { font-size: 15pt !important; }
@@ -323,29 +323,22 @@
       #printable-area.print-scale-xl .gd-section-header { font-size: 9pt !important; }
       #printable-area.print-scale-xl .signature-img { max-height: 45px !important; max-width: 220px !important; }
 
-      #printable-area.print-scale-lg { font-size: 9.5pt !important; line-height: 1.25 !important; }
+      #printable-area.print-scale-lg { font-size: 9pt !important; line-height: 1.25 !important; }
       #printable-area.print-scale-lg .gen-dec-table td,
       #printable-area.print-scale-lg .gen-dec-table th { padding: 4px 6px !important; }
       #printable-area.print-scale-lg .gd-title { font-size: 13pt !important; }
-      #printable-area.print-scale-lg .gd-subtitle { font-size: 8.5pt !important; margin-bottom: 6px !important; }
-      #printable-area.print-scale-lg .gd-section-header { font-size: 8.5pt !important; }
-      #printable-area.print-scale-lg .signature-img { max-height: 40px !important; max-width: 190px !important; }
+      #printable-area.print-scale-lg .gd-subtitle { font-size: 8pt !important; margin-bottom: 6px !important; }
+      #printable-area.print-scale-lg .gd-section-header { font-size: 8pt !important; }
+      #printable-area.print-scale-lg .signature-img { max-height: 38px !important; max-width: 190px !important; }
 
-      #printable-area.print-scale-md { font-size: 8.5pt !important; line-height: 1.2 !important; }
+      #printable-area.print-scale-md { font-size: 7.5pt !important; line-height: 1.15 !important; }
       #printable-area.print-scale-md .gen-dec-table td,
-      #printable-area.print-scale-md .gen-dec-table th { padding: 3.5px 5px !important; }
-      #printable-area.print-scale-md .gd-title { font-size: 12pt !important; }
-      #printable-area.print-scale-md .gd-subtitle { font-size: 7.5pt !important; margin-bottom: 5px !important; }
-      #printable-area.print-scale-md .gd-section-header { font-size: 7.5pt !important; }
-      #printable-area.print-scale-md .signature-img { max-height: 35px !important; max-width: 180px !important; }
-
-      #printable-area.print-scale-sm { font-size: 7.5pt !important; line-height: 1.15 !important; }
-      #printable-area.print-scale-sm .gen-dec-table td,
-      #printable-area.print-scale-sm .gen-dec-table th { padding: 3px 4px !important; }
-      #printable-area.print-scale-sm .gd-title { font-size: 11pt !important; }
-      #printable-area.print-scale-sm .gd-subtitle { font-size: 7pt !important; margin-bottom: 4px !important; }
-      #printable-area.print-scale-sm .gd-section-header { font-size: 7pt !important; }
-      #printable-area.print-scale-sm .signature-img { max-height: 32px !important; max-width: 165px !important; }
+      #printable-area.print-scale-md .gen-dec-table th { padding: 3px 5px !important; }
+      #printable-area.print-scale-md .gd-title { font-size: 11pt !important; }
+      #printable-area.print-scale-md .gd-subtitle { font-size: 7pt !important; margin-bottom: 5px !important; }
+      #printable-area.print-scale-md .gd-section-header { font-size: 7pt !important; }
+      #printable-area.print-scale-md .signature-img { max-height: 33px !important; max-width: 175px !important; }
+      /* print-scale-sm (padrão, 6.5pt) usa os valores base acima — calibrado para caber ~8 passageiros + 2 tripulantes numa folha */
 
       .text-center { text-align: center !important; }
       .bold { font-weight: bold !important; }
@@ -388,7 +381,7 @@
       </div>
       <div class="form-group">
         <label>DATE</label>
-        <input type="date" id="date" required>
+        <input type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" class="date-mask" id="date" required>
       </div>
     </div>
 
@@ -563,6 +556,7 @@
     return (str || '').toUpperCase();
   }
 
+  // Evita que aspas ou tags em nomes/campos quebrem o HTML gerado (linhas dinâmicas e impressão)
   function escapeHtml(str) {
     return (str || '')
       .replace(/&/g, '&amp;')
@@ -578,7 +572,7 @@
     row.innerHTML = `
       <td><input type="text" class="c-name" value="${escapeHtml(name)}"></td>
       <td><input type="text" class="c-func" value="${escapeHtml(func)}"></td>
-      <td><input type="date" class="c-dob" value="${escapeHtml(dob)}"></td>
+      <td><input type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" class="c-dob date-mask" value="${escapeHtml(dob)}"></td>
       <td><input type="text" class="c-pob" value="${escapeHtml(pob)}"></td>
       <td><input type="text" class="c-pass" value="${escapeHtml(pass)}"></td>
       <td><button type="button" class="btn btn-danger" onclick="this.closest('tr').remove()">X</button></td>
@@ -591,7 +585,7 @@
     const row = document.createElement('tr');
     row.innerHTML = `
       <td><input type="text" class="p-name"></td>
-      <td><input type="date" class="p-dob"></td>
+      <td><input type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" class="p-dob date-mask"></td>
       <td><input type="text" class="p-pob"></td>
       <td><input type="text" class="p-pass"></td>
       <td><button type="button" class="btn btn-danger" onclick="this.closest('tr').remove()">X</button></td>
@@ -640,8 +634,9 @@
       
       const tbody = document.querySelector('#crewTable tbody');
       tbody.innerHTML = '';
+      // Respeita uma tripulação salva vazia (não força 2 linhas em branco de volta)
       if (defaults.crewData) {
-        defaults.crewData.forEach(c => addCrewRow(c.name, c.func, c.dob, c.pob, c.pass));
+        defaults.crewData.forEach(c => addCrewRow(c.name, c.func, formatDate(c.dob), c.pob, c.pass));
       } else {
         addCrewRow('', 'PILOT');
         addCrewRow('', 'PILOT');
@@ -685,15 +680,40 @@
 
   function formatDate(d) {
     if (!d) return '';
-    const parts = d.split('-');
-    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    // Compatibilidade com datas salvas no formato antigo (AAAA-MM-DD, do seletor de calendário)
+    const isoMatch = d.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (isoMatch) {
+      return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]}`;
+    }
+    // Novo campo de texto já digita no formato DD/MM/AAAA
+    return d;
   }
+
+  // Insere as barras automaticamente enquanto o usuário digita dia/mês/ano
+  function formatDateInput(el) {
+    const digits = el.value.replace(/\D/g, '').slice(0, 8);
+    let formatted = digits;
+    if (digits.length > 4) {
+      formatted = digits.slice(0, 2) + '/' + digits.slice(2, 4) + '/' + digits.slice(4);
+    } else if (digits.length > 2) {
+      formatted = digits.slice(0, 2) + '/' + digits.slice(2);
+    }
+    el.value = formatted;
+  }
+
+  document.addEventListener('input', function(e) {
+    if (e.target.classList && e.target.classList.contains('date-mask')) {
+      formatDateInput(e.target);
+    }
+  });
 
   function clearFieldErrors() {
     document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
   }
 
   function validateForm() {
+    // Apenas destaca em vermelho os campos vazios como aviso visual —
+    // não impede a geração/impressão da declaração.
     clearFieldErrors();
     const requiredIds = ['operator', 'registration', 'date', 'depPlace', 'depTime', 'arrPlace', 'arrTime', 'picName'];
 
@@ -706,11 +726,13 @@
   }
 
   function getPrintScaleClass(totalFilledRows) {
-    // Escala Suave: Mantém a letra visível e legível ocupando a folha A4 proporcionalmente
+    // Poucos nomes preenchidos => letra maior para preencher a folha.
+    // Muitos nomes (perto de 8 passageiros + 2 tripulantes) => volta ao tamanho
+    // compacto original, que é o único testado para garantir 1 página só.
     if (totalFilledRows <= 3) return 'print-scale-xl';
-    if (totalFilledRows <= 6) return 'print-scale-lg'; // Abrange até 4 pax + 2 tripulantes sem encolher
-    if (totalFilledRows <= 9) return 'print-scale-md'; // Mantém 8.5pt confortável para até 7 pax
-    return 'print-scale-sm'; // 7.5pt apenas em voos cheios (8+ pax)
+    if (totalFilledRows <= 5) return 'print-scale-lg';
+    if (totalFilledRows <= 7) return 'print-scale-md';
+    return 'print-scale-sm';
   }
 
   function generateAndPrint() {
@@ -781,8 +803,7 @@
           <col style="width: 13.5%">
           <col style="width: 13.5%">
           <col style="width: 13.5%">
-        </colgroup>
-        <tr>
+        </colgroup>        <tr>
           <td colspan="4"><strong>OPERATOR:</strong> ${toUpper(escapeHtml(document.getElementById('operator').value))}</td>
           <td colspan="4"><strong>DATE:</strong> ${formatDate(document.getElementById('date').value)}</td>
         </tr>
@@ -792,7 +813,7 @@
         </tr>
         <tr>
           <td colspan="4"><strong>DEPARTURE FROM (PLACE):</strong> ${toUpper(escapeHtml(document.getElementById('depPlace').value))}</td>
-          <td colspan="4"><strong>ARRIVAL AT (PLACE):</strong> ${toUpper(document.getElementById('arrPlace').value)}</td>
+          <td colspan="4"><strong>ARRIVAL AT (PLACE):</strong> ${toUpper(escapeHtml(document.getElementById('arrPlace').value))}</td>
         </tr>
         <tr>
           <td colspan="4"><strong>DEPARTURE TIME (EXPECTED):</strong> ${document.getElementById('depTime').value}</td>
@@ -800,7 +821,7 @@
         </tr>
         
         <tr><th colspan="8" class="text-center gd-section-header" style="background:#eee;">CREW MANIFEST</th></tr>
-        <tr class="bold" style="font-size: 6.5pt;">
+        <tr class="bold" style="font-size: 6pt;">
           <td colspan="2">NAME</td>
           <td>FUNC.</td>
           <td>BIRTH DATE</td>
@@ -810,7 +831,7 @@
         ${crewRows || '<tr><td colspan="8">NONE</td></tr>'}
 
         <tr><th colspan="8" class="text-center gd-section-header" style="background:#eee;">PASSENGER MANIFEST</th></tr>
-        <tr class="bold" style="font-size: 6.5pt;">
+        <tr class="bold" style="font-size: 6pt;">
           <td colspan="3">NAME</td>
           <td>BIRTH DATE</td>
           <td colspan="2">BIRTH PLACE</td>
