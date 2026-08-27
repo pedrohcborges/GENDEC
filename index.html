@@ -21,8 +21,8 @@
       --text-muted: #94a3b8;
       --primary: #38bdf8;
       --primary-hover: #0284c7;
-      --success: #22c55e;
-      --danger: #ef4444;
+      --success: #34d399;
+      --danger: #f87171;
       --input-bg: #0f172a;
     }
 
@@ -150,6 +150,7 @@
       -webkit-appearance: none;
       appearance: none;
       min-height: 38px;
+      color-scheme: dark;
     }
 
     input:focus, select:focus {
@@ -204,19 +205,21 @@
     }
 
     .btn:hover { background-color: var(--primary-hover); color: white; }
-    .btn-secondary { background-color: #334155; color: var(--text); margin-top: 5px; }
-    .btn-secondary:hover { background-color: #475569; }
+    .btn-secondary { background-color: transparent; color: var(--text-muted); border: 1.5px solid var(--border); margin-top: 5px; }
+    .btn-secondary:hover { color: var(--text); border-color: var(--primary); }
     .btn-save { background-color: var(--success); color: #0f172a; margin-top: 15px; width: 100%; }
     .btn-save:hover { background-color: #16a34a; color: white; }
-    .btn-danger { background-color: var(--danger); color: white; padding: 4px 8px; font-size: 0.75rem; }
-    .btn-clear { background-color: #475569; color: white; padding: 6px 10px; font-size: 0.7rem; margin-top: 6px; align-self: flex-start; }
+    .btn-danger { background-color: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; }
+    .btn-danger:hover { background-color: var(--danger); color: white; }
+    .btn-clear { background-color: transparent; color: var(--text-muted); border: 1px solid var(--border); padding: 6px 10px; font-size: 0.7rem; margin-top: 6px; align-self: flex-start; border-radius: 4px; }
+    .btn-clear:hover { color: var(--text); border-color: var(--primary); }
     .btn-submit { width: 100%; padding: 14px; font-size: 0.95rem; margin-top: 15px; }
-    .btn-reset { width: 100%; padding: 10px; font-size: 0.8rem; margin-top: 8px; background-color: #334155; color: var(--text); }
-    .btn-reset:hover { background-color: #475569; }
+    .btn-reset { width: 100%; padding: 10px; font-size: 0.8rem; margin-top: 8px; background-color: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+    .btn-reset:hover { color: var(--text); border-color: var(--primary); }
 
     .canvas-container {
       background: #ffffff;
-      border: 2px dashed var(--border);
+      border: 1.5px dashed var(--border);
       border-radius: 6px;
       width: 100%;
       max-width: 350px;
@@ -254,11 +257,11 @@
       display: none;
     }
 
-    /* Impressão Ultra-Compacta (A4 1 Folha para 8 passageiros) */
+    /* Impressão Equilibrada (A4 1 Folha com tamanho constante e legível) */
     @media print {
       @page {
         size: A4 portrait;
-        margin: 4mm 5mm;
+        margin: 5mm 6mm;
       }
 
       body {
@@ -278,22 +281,22 @@
         background: white !important;
         color: black !important;
         font-family: Arial, sans-serif !important;
-        font-size: 6.5pt !important;
-        line-height: 1.1 !important;
+        font-size: 8.5pt !important;
+        line-height: 1.25 !important;
         text-transform: uppercase !important;
       }
 
       .gen-dec-table {
         width: 100% !important;
         border-collapse: collapse !important;
-        margin-top: 4px !important;
+        margin-top: 6px !important;
         table-layout: fixed !important;
       }
 
       .gen-dec-table td, .gen-dec-table th {
         border: 1px solid #000 !important;
-        padding: 2px 5px !important;
-        vertical-align: top !important;
+        padding: 4px 6px !important;
+        vertical-align: middle !important;
         page-break-inside: avoid !important;
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
@@ -304,41 +307,15 @@
       }
 
       .signature-img {
-        max-height: 30px !important;
-        max-width: 160px !important;
+        max-height: 35px !important;
+        max-width: 180px !important;
         display: block !important;
-        margin-top: 2px !important;
+        margin-top: 3px !important;
       }
 
-      .gd-title { font-size: 9.5pt !important; }
-      .gd-subtitle { font-size: 6.5pt !important; margin-bottom: 4px !important; }
-      .gd-section-header { font-size: 6.5pt !important; }
-
-      /* Poucos nomes preenchidos: letra maior para preencher a folha */
-      #printable-area.print-scale-xl { font-size: 11pt !important; line-height: 1.4 !important; }
-      #printable-area.print-scale-xl .gen-dec-table td,
-      #printable-area.print-scale-xl .gen-dec-table th { padding: 5px 7px !important; }
-      #printable-area.print-scale-xl .gd-title { font-size: 15pt !important; }
-      #printable-area.print-scale-xl .gd-subtitle { font-size: 9pt !important; margin-bottom: 8px !important; }
-      #printable-area.print-scale-xl .gd-section-header { font-size: 9pt !important; }
-      #printable-area.print-scale-xl .signature-img { max-height: 45px !important; max-width: 220px !important; }
-
-      #printable-area.print-scale-lg { font-size: 9pt !important; line-height: 1.25 !important; }
-      #printable-area.print-scale-lg .gen-dec-table td,
-      #printable-area.print-scale-lg .gen-dec-table th { padding: 4px 6px !important; }
-      #printable-area.print-scale-lg .gd-title { font-size: 13pt !important; }
-      #printable-area.print-scale-lg .gd-subtitle { font-size: 8pt !important; margin-bottom: 6px !important; }
-      #printable-area.print-scale-lg .gd-section-header { font-size: 8pt !important; }
-      #printable-area.print-scale-lg .signature-img { max-height: 38px !important; max-width: 190px !important; }
-
-      #printable-area.print-scale-md { font-size: 7.5pt !important; line-height: 1.15 !important; }
-      #printable-area.print-scale-md .gen-dec-table td,
-      #printable-area.print-scale-md .gen-dec-table th { padding: 3px 5px !important; }
-      #printable-area.print-scale-md .gd-title { font-size: 11pt !important; }
-      #printable-area.print-scale-md .gd-subtitle { font-size: 7pt !important; margin-bottom: 5px !important; }
-      #printable-area.print-scale-md .gd-section-header { font-size: 7pt !important; }
-      #printable-area.print-scale-md .signature-img { max-height: 33px !important; max-width: 175px !important; }
-      /* print-scale-sm (padrão, 6.5pt) usa os valores base acima — calibrado para caber ~8 passageiros + 2 tripulantes numa folha */
+      .gd-title { font-size: 12pt !important; margin-bottom: 2px !important; }
+      .gd-subtitle { font-size: 7.5pt !important; margin-bottom: 6px !important; }
+      .gd-section-header { font-size: 8pt !important; }
 
       .text-center { text-align: center !important; }
       .bold { font-weight: bold !important; }
@@ -556,7 +533,6 @@
     return (str || '').toUpperCase();
   }
 
-  // Evita que aspas ou tags em nomes/campos quebrem o HTML gerado (linhas dinâmicas e impressão)
   function escapeHtml(str) {
     return (str || '')
       .replace(/&/g, '&amp;')
@@ -634,7 +610,6 @@
       
       const tbody = document.querySelector('#crewTable tbody');
       tbody.innerHTML = '';
-      // Respeita uma tripulação salva vazia (não força 2 linhas em branco de volta)
       if (defaults.crewData) {
         defaults.crewData.forEach(c => addCrewRow(c.name, c.func, formatDate(c.dob), c.pob, c.pass));
       } else {
@@ -680,16 +655,13 @@
 
   function formatDate(d) {
     if (!d) return '';
-    // Compatibilidade com datas salvas no formato antigo (AAAA-MM-DD, do seletor de calendário)
     const isoMatch = d.match(/^(\d{4})-(\d{2})-(\d{2})$/);
     if (isoMatch) {
       return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]}`;
     }
-    // Novo campo de texto já digita no formato DD/MM/AAAA
     return d;
   }
 
-  // Insere as barras automaticamente enquanto o usuário digita dia/mês/ano
   function formatDateInput(el) {
     const digits = el.value.replace(/\D/g, '').slice(0, 8);
     let formatted = digits;
@@ -712,8 +684,6 @@
   }
 
   function validateForm() {
-    // Apenas destaca em vermelho os campos vazios como aviso visual —
-    // não impede a geração/impressão da declaração.
     clearFieldErrors();
     const requiredIds = ['operator', 'registration', 'date', 'depPlace', 'depTime', 'arrPlace', 'arrTime', 'picName'];
 
@@ -725,29 +695,10 @@
     });
   }
 
-  function getPrintScaleClass(totalFilledRows) {
-    // Poucos nomes preenchidos => letra maior para preencher a folha.
-    // Muitos nomes (perto de 8 passageiros + 2 tripulantes) => volta ao tamanho
-    // compacto original, que é o único testado para garantir 1 página só.
-    if (totalFilledRows <= 3) return 'print-scale-xl';
-    if (totalFilledRows <= 5) return 'print-scale-lg';
-    if (totalFilledRows <= 7) return 'print-scale-md';
-    return 'print-scale-sm';
-  }
-
   function generateAndPrint() {
     validateForm();
 
     const container = document.getElementById('printable-area');
-
-    let filledCount = 0;
-    document.querySelectorAll('#crewTable tbody tr').forEach(tr => {
-      if (tr.querySelector('.c-name').value.trim()) filledCount++;
-    });
-    document.querySelectorAll('#paxTable tbody tr').forEach(tr => {
-      if (tr.querySelector('.p-name').value.trim()) filledCount++;
-    });
-    container.className = getPrintScaleClass(filledCount);
     
     let crewRows = '';
     document.querySelectorAll('#crewTable tbody tr').forEach(tr => {
@@ -803,7 +754,8 @@
           <col style="width: 13.5%">
           <col style="width: 13.5%">
           <col style="width: 13.5%">
-        </colgroup>        <tr>
+        </colgroup>
+        <tr>
           <td colspan="4"><strong>OPERATOR:</strong> ${toUpper(escapeHtml(document.getElementById('operator').value))}</td>
           <td colspan="4"><strong>DATE:</strong> ${formatDate(document.getElementById('date').value)}</td>
         </tr>
@@ -821,7 +773,7 @@
         </tr>
         
         <tr><th colspan="8" class="text-center gd-section-header" style="background:#eee;">CREW MANIFEST</th></tr>
-        <tr class="bold" style="font-size: 6pt;">
+        <tr class="bold" style="font-size: 7.5pt;">
           <td colspan="2">NAME</td>
           <td>FUNC.</td>
           <td>BIRTH DATE</td>
@@ -831,7 +783,7 @@
         ${crewRows || '<tr><td colspan="8">NONE</td></tr>'}
 
         <tr><th colspan="8" class="text-center gd-section-header" style="background:#eee;">PASSENGER MANIFEST</th></tr>
-        <tr class="bold" style="font-size: 6pt;">
+        <tr class="bold" style="font-size: 7.5pt;">
           <td colspan="3">NAME</td>
           <td>BIRTH DATE</td>
           <td colspan="2">BIRTH PLACE</td>
