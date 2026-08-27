@@ -651,31 +651,21 @@
   }
 
   function validateForm() {
+    // Apenas destaca em vermelho os campos vazios como aviso visual —
+    // não impede a geração/impressão da declaração.
     clearFieldErrors();
     const requiredIds = ['operator', 'registration', 'date', 'depPlace', 'depTime', 'arrPlace', 'arrTime', 'picName'];
-    const missing = [];
 
     requiredIds.forEach(id => {
       const el = document.getElementById(id);
       if (!el.value || !el.value.trim()) {
         el.classList.add('field-error');
-        missing.push(id);
       }
     });
-
-    if (missing.length > 0) {
-      showToast('PREENCHA OS CAMPOS DESTACADOS EM VERMELHO', true);
-      document.getElementById(missing[0]).scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return false;
-    }
-
-    return true;
   }
 
   function generateAndPrint() {
-    if (!validateForm()) {
-      return;
-    }
+    validateForm();
 
     const container = document.getElementById('printable-area');
     
