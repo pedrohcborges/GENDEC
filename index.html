@@ -141,6 +141,11 @@
       min-width: 0;
     }
 
+    input.field-error {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 1px var(--danger);
+    }
+
     input[type="date"], input[type="time"] {
       -webkit-appearance: none;
       appearance: none;
@@ -206,6 +211,8 @@
     .btn-danger { background-color: var(--danger); color: white; padding: 4px 8px; font-size: 0.75rem; }
     .btn-clear { background-color: #475569; color: white; padding: 6px 10px; font-size: 0.7rem; margin-top: 6px; align-self: flex-start; }
     .btn-submit { width: 100%; padding: 14px; font-size: 0.95rem; margin-top: 15px; }
+    .btn-reset { width: 100%; padding: 10px; font-size: 0.8rem; margin-top: 8px; background-color: #334155; color: var(--text); }
+    .btn-reset:hover { background-color: #475569; }
 
     .canvas-container {
       background: #ffffff;
@@ -236,6 +243,11 @@
       margin-top: 10px;
       text-transform: uppercase;
       font-size: 0.8rem;
+    }
+
+    .toast.error {
+      background-color: var(--danger);
+      color: white;
     }
 
     #printable-area {
@@ -404,9 +416,10 @@
     </div>
 
     <button type="button" class="btn btn-save" onclick="saveDefaults()">💾 SALVAR OPERADOR, CREW E ASSINATURA</button>
-    <div id="toast" class="toast">DADOS SALVOS COM SUCESSO!</div>
+    <div id="toast" class="toast"></div>
 
     <button type="button" class="btn btn-submit" onclick="generateAndPrint()">GERAR / IMPRIMIR DECLARAÇÃO</button>
+    <button type="button" class="btn btn-reset" onclick="resetFlight()">🔄 NOVO VOO (limpa data/rota/passageiros)</button>
   </form>
 </div>
 
@@ -505,15 +518,25 @@
     return (str || '').toUpperCase();
   }
 
+  // Evita que aspas ou tags em nomes/campos quebrem o HTML gerado (linhas dinâmicas e impressão)
+  function escapeHtml(str) {
+    return (str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
   function addCrewRow(name = '', func = 'PILOT', dob = '', pob = '', pass = '') {
     const tbody = document.querySelector('#crewTable tbody');
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td><input type="text" class="c-name" value="${name}"></td>
-      <td><input type="text" class="c-func" value="${func}"></td>
-      <td><input type="date" class="c-dob" value="${dob}"></td>
-      <td><input type="text" class="c-pob" value="${pob}"></td>
-      <td><input type="text" class="c-pass" value="${pass}"></td>
+      <td><input type="text" class="c-name" value="${escapeHtml(name)}"></td>
+      <td><input type="text" class="c-func" value="${escapeHtml(func)}"></td>
+      <td><input type="date" class="c-dob" value="${escapeHtml(dob)}"></td>
+      <td><input type="text" class="c-pob" value="${escapeHtml(pob)}"></td>
+      <td><input type="text" class="c-pass" value="${escapeHtml(pass)}"></td>
       <td><button type="button" class="btn btn-danger" onclick="this.closest('tr').remove()">X</button></td>
     `;
     tbody.appendChild(row);
@@ -530,6 +553,14 @@
       <td><button type="button" class="btn btn-danger" onclick="this.closest('tr').remove()">X</button></td>
     `;
     tbody.appendChild(row);
+  }
+
+  function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.toggle('error', isError);
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 2500);
   }
 
   function saveDefaults() {
@@ -552,9 +583,7 @@
     const defaults = { operator, picName, crewData, sigData };
     localStorage.setItem('gendec_defaults', JSON.stringify(defaults));
 
-    const toast = document.getElementById('toast');
-    toast.style.display = 'block';
-    setTimeout(() => { toast.style.display = 'none'; }, 2500);
+    showToast('DADOS SALVOS COM SUCESSO!');
   }
 
   function loadDefaults() {
@@ -567,7 +596,8 @@
       
       const tbody = document.querySelector('#crewTable tbody');
       tbody.innerHTML = '';
-      if (defaults.crewData && defaults.crewData.length > 0) {
+      // Respeita uma tripulação salva vazia (não força 2 linhas em branco de volta)
+      if (defaults.crewData) {
         defaults.crewData.forEach(c => addCrewRow(c.name, c.func, c.dob, c.pob, c.pass));
       } else {
         addCrewRow('', 'PILOT');
@@ -590,22 +620,72 @@
     addPaxRow();
   }
 
+  function resetFlight() {
+    if (!confirm('Limpar data, rota e lista de passageiros deste voo? (Operador, tripulação e assinatura salvos são mantidos)')) {
+      return;
+    }
+    document.getElementById('date').value = '';
+    document.getElementById('depPlace').value = '';
+    document.getElementById('depTime').value = '';
+    document.getElementById('arrPlace').value = '';
+    document.getElementById('arrTime').value = '';
+    document.getElementById('registration').value = '';
+    document.getElementById('flightType').value = 'PRIVATE';
+
+    const paxTbody = document.querySelector('#paxTable tbody');
+    paxTbody.innerHTML = '';
+    addPaxRow();
+
+    clearFieldErrors();
+    showToast('NOVO VOO — CAMPOS LIMPOS');
+  }
+
   function formatDate(d) {
     if (!d) return '';
     const parts = d.split('-');
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
   }
 
+  function clearFieldErrors() {
+    document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
+  }
+
+  function validateForm() {
+    clearFieldErrors();
+    const requiredIds = ['operator', 'registration', 'date', 'depPlace', 'depTime', 'arrPlace', 'arrTime', 'picName'];
+    const missing = [];
+
+    requiredIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el.value || !el.value.trim()) {
+        el.classList.add('field-error');
+        missing.push(id);
+      }
+    });
+
+    if (missing.length > 0) {
+      showToast('PREENCHA OS CAMPOS DESTACADOS EM VERMELHO', true);
+      document.getElementById(missing[0]).scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return false;
+    }
+
+    return true;
+  }
+
   function generateAndPrint() {
+    if (!validateForm()) {
+      return;
+    }
+
     const container = document.getElementById('printable-area');
     
     let crewRows = '';
     document.querySelectorAll('#crewTable tbody tr').forEach(tr => {
-      const name = toUpper(tr.querySelector('.c-name').value);
-      const func = toUpper(tr.querySelector('.c-func').value);
+      const name = toUpper(escapeHtml(tr.querySelector('.c-name').value));
+      const func = toUpper(escapeHtml(tr.querySelector('.c-func').value));
       const dob = formatDate(tr.querySelector('.c-dob').value);
-      const pob = toUpper(tr.querySelector('.c-pob').value);
-      const pass = toUpper(tr.querySelector('.c-pass').value);
+      const pob = toUpper(escapeHtml(tr.querySelector('.c-pob').value));
+      const pass = toUpper(escapeHtml(tr.querySelector('.c-pass').value));
       if (name) {
         crewRows += `
           <tr>
@@ -620,10 +700,10 @@
 
     let paxRows = '';
     document.querySelectorAll('#paxTable tbody tr').forEach(tr => {
-      const name = toUpper(tr.querySelector('.p-name').value);
+      const name = toUpper(escapeHtml(tr.querySelector('.p-name').value));
       const dob = formatDate(tr.querySelector('.p-dob').value);
-      const pob = toUpper(tr.querySelector('.p-pob').value);
-      const pass = toUpper(tr.querySelector('.p-pass').value);
+      const pob = toUpper(escapeHtml(tr.querySelector('.p-pob').value));
+      const pass = toUpper(escapeHtml(tr.querySelector('.p-pass').value));
       if (name) {
         paxRows += `
           <tr>
@@ -645,16 +725,16 @@
       
       <table class="gen-dec-table">
         <tr>
-          <td colspan="4"><strong>OPERATOR:</strong> ${toUpper(document.getElementById('operator').value)}</td>
+          <td colspan="4"><strong>OPERATOR:</strong> ${toUpper(escapeHtml(document.getElementById('operator').value))}</td>
           <td colspan="4"><strong>DATE:</strong> ${formatDate(document.getElementById('date').value)}</td>
         </tr>
         <tr>
-          <td colspan="4"><strong>MARKS OF NATIONALITY AND REGISTRATION:</strong> ${toUpper(document.getElementById('registration').value)}</td>
+          <td colspan="4"><strong>MARKS OF NATIONALITY AND REGISTRATION:</strong> ${toUpper(escapeHtml(document.getElementById('registration').value))}</td>
           <td colspan="4"><strong>FLIGHT:</strong> ${toUpper(document.getElementById('flightType').value)}</td>
         </tr>
         <tr>
-          <td colspan="4"><strong>DEPARTURE FROM (PLACE):</strong> ${toUpper(document.getElementById('depPlace').value)}</td>
-          <td colspan="4"><strong>ARRIVAL AT (PLACE):</strong> ${toUpper(document.getElementById('arrPlace').value)}</td>
+          <td colspan="4"><strong>DEPARTURE FROM (PLACE):</strong> ${toUpper(escapeHtml(document.getElementById('depPlace').value))}</td>
+          <td colspan="4"><strong>ARRIVAL AT (PLACE):</strong> ${toUpper(escapeHtml(document.getElementById('arrPlace').value))}</td>
         </tr>
         <tr>
           <td colspan="4"><strong>DEPARTURE TIME (EXPECTED):</strong> ${document.getElementById('depTime').value}</td>
@@ -696,7 +776,7 @@
           <td colspan="8">
             I DECLARE THAT ALL STATEMENTS AND PARTICULARS CONTAINED IN THIS GENERAL DECLARATION, AND IN SUPPLEMENTARY FORMS REQUIRED TO BE PRESENTED WITH THIS GENERAL DECLARATION, ARE COMPLETE, EXACT AND TRUE TO THE BEST OF MY KNOWLEDGE AND THAT ALL THROUGH PASSENGERS WILL CONTINUE/HAVE CONTINUED ON THE FLIGHT.<br>
             <strong>NAME AND SIGNATURE (AUTHORIZED AGENT OR PILOT-IN-COMMAND):</strong><br>
-            ${toUpper(document.getElementById('picName').value)}
+            ${toUpper(escapeHtml(document.getElementById('picName').value))}
             ${signatureImgTag}
           </td>
         </tr>
