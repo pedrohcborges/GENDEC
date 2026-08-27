@@ -278,28 +278,33 @@
         background: white !important;
         color: black !important;
         font-family: Arial, sans-serif !important;
-        font-size: 6.5pt !important;
-        line-height: 1.1 !important;
+        font-size: 9pt !important;
+        line-height: 1.35 !important;
         text-transform: uppercase !important;
       }
 
       .gen-dec-table {
         width: 100% !important;
         border-collapse: collapse !important;
-        margin-top: 4px !important;
+        margin-top: 10px !important;
       }
 
       .gen-dec-table td, .gen-dec-table th {
         border: 1px solid #000 !important;
-        padding: 2px 3px !important;
+        padding: 6px 8px !important;
         vertical-align: top !important;
+        page-break-inside: avoid !important;
+      }
+
+      .gen-dec-table tr {
+        page-break-inside: avoid !important;
       }
 
       .signature-img {
-        max-height: 30px !important;
-        max-width: 160px !important;
+        max-height: 45px !important;
+        max-width: 220px !important;
         display: block !important;
-        margin-top: 2px !important;
+        margin-top: 4px !important;
       }
 
       .text-center { text-align: center !important; }
@@ -710,8 +715,8 @@
       : `<img src="${canvas.toDataURL()}" class="signature-img" /><br>________________________________________________________`;
 
     container.innerHTML = `
-      <div class="text-center bold" style="font-size: 9.5pt;">GENERAL DECLARATION</div>
-      <div class="text-center" style="font-size: 6.5pt; margin-bottom: 4px;">(OUTWARD/INWARD)<br>ICAO ANNEX 9 APPENDIX 1<br>AGRICULTURE, CUSTOMS, IMMIGRATION, AND PUBLIC HEALTH</div>
+      <div class="text-center bold" style="font-size: 13pt;">GENERAL DECLARATION</div>
+      <div class="text-center" style="font-size: 8pt; margin-bottom: 8px;">(OUTWARD/INWARD)<br>ICAO ANNEX 9 APPENDIX 1<br>AGRICULTURE, CUSTOMS, IMMIGRATION, AND PUBLIC HEALTH</div>
       
       <table class="gen-dec-table">
         <tr>
@@ -774,8 +779,12 @@
     `;
 
     setTimeout(() => {
-      window.print();
-    }, 100);
+      try {
+        window.print();
+      } catch (err) {
+        alert('Não foi possível abrir a impressão. Abra este arquivo diretamente no Safari/Chrome (fora do visualizador do app) e tente novamente.');
+      }
+    }, 150);
   }
 </script>
 </body>
